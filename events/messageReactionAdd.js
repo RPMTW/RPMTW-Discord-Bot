@@ -8,7 +8,7 @@ module.exports = async (reaction, user, client) => {
             return;
         }
     }
-    if (reaction.emoji.name == "♻️" && reaction.emoji.count >= 5 && !reaction.message.deleted) {
+    if (reaction.emoji.name == "♻️" && reaction.count >= 5 && !reaction.message.deleted) {
         await reaction.message.delete();
     }
 }
