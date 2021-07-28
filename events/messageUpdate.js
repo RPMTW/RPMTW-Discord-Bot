@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 module.exports = async (oldMessage, newMessage, client) => {
     let chennel = client.channels.fetch("832849374395760660");
     let embed = new MessageEmbed()
