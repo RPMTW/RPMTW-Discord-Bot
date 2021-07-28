@@ -9,8 +9,8 @@ module.exports = async (reaction, user, client) => {
     }
     if (!user.bot) {
         console.log(reaction.emoji.id);
-        // if (reaction.emoji.id == "") { 
-            
-        // }
+        if (reaction.emoji.name == "♻️") { 
+            console.log("Reaction added: " + reaction.emoji.name);
+        }
     }
 }
