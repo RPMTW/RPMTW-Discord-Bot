@@ -57,6 +57,10 @@ module.exports = async (client, log) => {
   client.on("messageDelete", async (messageDelete) => { //訊息刪除
     await require("./events/messageDelete")(messageDelete, client);
   });
+
+  client.on('messageReactionAdd', async (reaction, user) => { //表情符號更新
+    await require("./events/messageReactionAdd")(reaction, user, client);
+  });
   // client.on("voiceStateUpdate", async (vd, v) => {
   //   await require("./events/voiceStateUpdate")(vd, v, log);
   // });
