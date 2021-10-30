@@ -2,6 +2,7 @@ const config = require(`${process.cwd()}/config.json`)
 const talk = new Set();
 const fs = require("fs");
 const { MessageEmbed } = require("discord.js");
+
 module.exports = async (client, log) => {
 
   client.on("message", async (msg) => {

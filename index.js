@@ -3,6 +3,7 @@ const client = new Discord.Client()
 const config = require(`${process.cwd()}/config.json`)
 const log = new Discord.WebhookClient("832853964819136532", process.env['LogToken']);
 const fs = require("fs");
+const keep_alive = require('./keep.js')
 
 //const {MessageEmbed} = require("discord.js");
 
