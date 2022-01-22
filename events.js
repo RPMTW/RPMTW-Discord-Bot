@@ -23,7 +23,7 @@ module.exports = async (client, log) => {
         await msg.reply('執行指令時發生了意外錯誤!');
       }
     }
-    if (msg.mentions.has(SiongSng)) {
+    if (msg.mentions.has(SiongSng) && !msg.reference) {
       let embed = new MessageEmbed()
         .setTitle(`標記菘菘提示訊息`)
         .setDescription(`我們偵測到您 ${msg.author} 標記了 ${SiongSng}，提醒您非急事請勿使用標記功能來標記菘菘。 ~~它可是很忙ㄉ~~`)
@@ -32,7 +32,7 @@ module.exports = async (client, log) => {
     }
     if (msg.reference) {//如果該訊息是回覆的訊息
       msg.channel.messages.fetch(msg.reference.messageID).then(message => {
-        if (msg.mentions.has(message.author)) {
+        if (msg.mentions.has(message.author)  && msg.channel.id != "831494456913428501") {
           let embed = new MessageEmbed()
             .setTitle(`回覆訊息標記提示訊息`)
             .setDescription(`提醒您 ${msg.author}，使用回覆訊息時請不要使用標記功能，以免造成困擾，除非上下文距離很遠。`)
