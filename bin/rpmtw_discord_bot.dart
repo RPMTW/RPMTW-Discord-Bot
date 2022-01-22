@@ -1,17 +1,27 @@
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:rpmtw_discord_bot/events/events.dart';
+import 'package:rpmtw_discord_bot/events/message_create_event.dart';
+import 'package:rpmtw_discord_bot/interactions.dart';
+import 'package:rpmtw_discord_bot/utilities/changelog.dart';
+import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 void main(List<String> arguments) {
-  load();
-  INyxxWebsocket bot = NyxxFactory.createNyxxWebsocket(
-      env['DISCORD_TOKEN']!, GatewayIntents.allUnprivileged);
+  Data.init();
+  INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
+      env['DISCORD_TOKEN']!, GatewayIntents.allUnprivileged,
+      options: ClientOptions(dispatchRawShardEvent: true));
 
-  bot.registerPlugin(Logging());
-  bot.registerPlugin(CliIntegration());
-  bot.registerPlugin(IgnoreExceptions());
-  bot.connect();
+  client.registerPlugin(Logging());
+  client.registerPlugin(CliIntegration());
+  client.registerPlugin(IgnoreExceptions());
+  client.connect();
 
-  bot.eventsWs.onReady.listen((e) {
-    print("Ready!");
-  });
+  /// Register all commands
+  Interactions.register(client);
+
+  /// Register all events
+  Events.register(client);
+
+  Changelog.init(client);
 }

@@ -15,3 +15,9 @@ dev_dependencies:
 dependencies: 
   dotenv: ^3.0.0
   nyxx: ^3.2.3
+  nyxx_commander: ^3.0.0
+  nyxx_extensions: ^3.0.0
+  nyxx_interactions: ^3.3.0
+  nyxx_lavalink: ^3.0.0
+  nyxx_pagination: ^2.1.0
+  rpmtw_api_client: ^1.0.5+5

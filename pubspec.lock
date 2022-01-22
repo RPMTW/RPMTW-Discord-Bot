@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
+  crypto:
+    dependency: transitive
+    description:
+      name: crypto
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   dotenv:
     dependency: "direct main"
     description:
@@ -78,6 +85,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.2.3"
+  nyxx_commander:
+    dependency: "direct main"
+    description:
+      name: nyxx_commander
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  nyxx_extensions:
+    dependency: "direct main"
+    description:
+      name: nyxx_extensions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  nyxx_interactions:
+    dependency: "direct main"
+    description:
+      name: nyxx_interactions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.3.0"
+  nyxx_lavalink:
+    dependency: "direct main"
+    description:
+      name: nyxx_lavalink
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  nyxx_pagination:
+    dependency: "direct main"
+    description:
+      name: nyxx_pagination
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   path:
     dependency: transitive
     description:
@@ -85,6 +127,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.1"
+  pub_semver:
+    dependency: transitive
+    description:
+      name: pub_semver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  random_string:
+    dependency: transitive
+    description:
+      name: random_string
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.1"
+  rpmtw_api_client:
+    dependency: "direct main"
+    description:
+      name: rpmtw_api_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5+5"
   source_span:
     dependency: transitive
     description:
