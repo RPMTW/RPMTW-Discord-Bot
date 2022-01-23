@@ -1,1 +1,7 @@
-A simple command-line application.
+# RPMTW Discord Bot
+# RPMTW Discord 機器人
+
+## 功能
+- 日誌紀錄
+- 訊息刪除/編輯紀錄
+- 斜槓指令
