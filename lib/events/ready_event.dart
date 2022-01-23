@@ -5,9 +5,10 @@ import 'package:rpmtw_discord_bot/utilities/data.dart';
 class ReadyEvent implements BaseEvent<IReadyEvent> {
   @override
   Future<void> handler(client, event) async {
-    client.shardManager.rawEvent.listen((_event) {
-      print("Raw event: ${_event.rawData}");
-    });
+    // client.shardManager.rawEvent.listen((_event) {
+    //   print("Raw event: ${_event.rawData}");
+    // });
+    
     await Data.initOnReady(client);
     logger.info('${client.self.tag} Ready!');
   }

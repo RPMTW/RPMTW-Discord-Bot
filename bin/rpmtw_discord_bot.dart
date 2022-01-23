@@ -7,8 +7,12 @@ import 'package:rpmtw_discord_bot/utilities/data.dart';
 void main(List<String> arguments) {
   Data.init();
   INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
-      env['DISCORD_TOKEN']!, GatewayIntents.allUnprivileged,
-      options: ClientOptions(dispatchRawShardEvent: true));
+    env['DISCORD_TOKEN']!,
+    GatewayIntents.allUnprivileged,
+    options: ClientOptions(
+     // dispatchRawShardEvent: true
+    ),
+  );
 
   client.registerPlugin(Logging());
   client.registerPlugin(CliIntegration());

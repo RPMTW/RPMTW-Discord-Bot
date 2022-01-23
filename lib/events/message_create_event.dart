@@ -5,10 +5,12 @@ import 'package:rpmtw_discord_bot/utilities/data.dart';
 class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
   @override
   Future<void> handler(client, event) async {
-    String messageContent = event.message.content;
+    IMessage message = event.message;
+    if (message.author.bot) return;
+    String messageContent = message.content;
 
-    RegExp urlRegex = RegExp(
-        r"(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
+    RegExp urlRegex =
+        RegExp(r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
     if (urlRegex.hasMatch(messageContent)) {
       /// 訊息內容包含網址
@@ -57,12 +59,12 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
 
         if (phishing) {
           /// 符合詐騙連結條件
-          _onPhishing(event.message, ban: true);
+          _onPhishing(message, ban: true);
         }
       }
     } else if (phishingTermList.any((e) => messageContent.contains(e))) {
       /// 詐騙關鍵字
-      _onPhishing(event.message, ban: false);
+      _onPhishing(message, ban: false);
     }
   }
 

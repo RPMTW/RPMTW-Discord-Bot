@@ -10,6 +10,7 @@ import 'package:rpmtw_discord_bot/utilities/log.dart';
 Snowflake get rpmtwDiscordServerID => 815819580840607807.toSnowflake();
 Snowflake get logChannelID => 934595900528025640.toSnowflake();
 Snowflake get siongsngUserID => 645588343228334080.toSnowflake();
+Snowflake get voiceChannelID => 832895058281758740.toSnowflake();
 
 late Logger _logger;
 Logger get logger => _logger;
