@@ -161,10 +161,10 @@
       "name": "rpmtw_discord_bot",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.15"
     }
   ],
-  "generated": "2022-01-23T01:00:08.058635Z",
+  "generated": "2022-01-23T08:18:51.562239Z",
   "generator": "pub",
   "generatorVersion": "2.16.0-134.1.beta"
 }
