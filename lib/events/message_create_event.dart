@@ -52,7 +52,8 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
             domain1.contains("steam") ||
             domain2.contains("gift");
 
-        bool phishing = !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
+        bool phishing =
+            !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
 
         if (phishing) {
           /// 符合詐騙連結條件
@@ -78,12 +79,12 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
     if (message.guild != null) {
       IGuild guild = message.guild!.getFromCache()!;
       String auditReason =
-          "違反RPMTW Discord伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。";
+          "違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。";
 
       if (ban) {
-        guild.ban(author, deleteMessageDays: 1, auditReason: auditReason);
+        await guild.ban(author, deleteMessageDays: 1, auditReason: auditReason);
       } else {
-        guild.kick(author, auditReason: auditReason);
+        await guild.kick(author, auditReason: auditReason);
       }
     }
     await logger.info("偵測到 <@${author.id}> 在 <#${message.channel.id}> 發送詐騙訊息");
