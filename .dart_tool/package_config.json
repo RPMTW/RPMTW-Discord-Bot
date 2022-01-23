@@ -56,6 +56,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "logger",
+      "rootUri": "file:///home/siongsng/.pub-cache/hosted/pub.dartlang.org/logger-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "logging",
       "rootUri": "file:///home/siongsng/.pub-cache/hosted/pub.dartlang.org/logging-1.0.2",
       "packageUri": "lib/",
@@ -158,7 +164,7 @@
       "languageVersion": "2.16"
     }
   ],
-  "generated": "2022-01-22T12:58:56.347385Z",
+  "generated": "2022-01-23T00:10:44.814974Z",
   "generator": "pub",
   "generatorVersion": "2.16.0-134.1.beta"
 }

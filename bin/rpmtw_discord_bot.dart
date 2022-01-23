@@ -1,9 +1,7 @@
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
-import 'package:rpmtw_discord_bot/events/message_create_event.dart';
 import 'package:rpmtw_discord_bot/interactions.dart';
-import 'package:rpmtw_discord_bot/utilities/changelog.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 void main(List<String> arguments) {
@@ -22,6 +20,4 @@ void main(List<String> arguments) {
 
   /// Register all events
   Events.register(client);
-
-  Changelog.init(client);
 }

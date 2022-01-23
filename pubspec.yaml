@@ -14,6 +14,7 @@ dev_dependencies:
   lints: ^1.0.0
 dependencies: 
   dotenv: ^3.0.0
+  logger: ^1.1.0
   nyxx: ^3.2.3
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
