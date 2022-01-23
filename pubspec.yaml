@@ -21,4 +21,5 @@ dependencies:
   nyxx_interactions: ^3.3.0
   nyxx_lavalink: ^3.0.0
   nyxx_pagination: ^2.1.0
+  path: ^1.8.1
   rpmtw_api_client: ^1.0.5+5
