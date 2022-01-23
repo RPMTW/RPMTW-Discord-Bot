@@ -5,66 +5,70 @@ import 'package:rpmtw_discord_bot/utilities/data.dart';
 class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
   @override
   Future<void> handler(client, event) async {
-    IMessage message = event.message;
-    if (message.author.bot) return;
-    String messageContent = message.content;
+    try {
+      IMessage message = event.message;
+      if (message.author.bot) return;
+      String messageContent = message.content;
 
-    RegExp urlRegex =
-        RegExp(r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
+      RegExp urlRegex = RegExp(
+          r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
-    if (urlRegex.hasMatch(messageContent)) {
-      /// 訊息內容包含網址
+      if (urlRegex.hasMatch(messageContent)) {
+        /// 訊息內容包含網址
 
-      List<RegExpMatch> matchList =
-          urlRegex.allMatches(messageContent).toList();
+        List<RegExpMatch> matchList =
+            urlRegex.allMatches(messageContent).toList();
 
-      List<String> domainWhitelist = [
-        // DC 官方域名
-        "discord.gift",
-        "discord.gg",
-        "discord.com",
-        "discordapp.com",
-        "discordapp.net",
+        List<String> domainWhitelist = [
+          // DC 官方域名
+          "discord.gift",
+          "discord.gg",
+          "discord.com",
+          "discordapp.com",
+          "discordapp.net",
 
-        /// 社群域名
-        "discordresources.com",
-        "discord.wiki",
+          /// 社群域名
+          "discordresources.com",
+          "discord.wiki",
 
-        // Steam 官方域名
-        "steampowered.com",
-        "steamcommunity.com",
+          // Steam 官方域名
+          "steampowered.com",
+          "steamcommunity.com",
 
-        // 在 Alexa 名列前茅的 .gift 和 .gifts 域名
-        "crediter.gift",
-        "packedwithpurpose.gifts",
-        "123movies.gift",
-        "admiralwin.gift",
-        "gol.gift",
-        "newhome.gifts"
-      ];
+          // 在 Alexa 名列前茅的 .gift 和 .gifts 域名
+          "crediter.gift",
+          "packedwithpurpose.gifts",
+          "123movies.gift",
+          "admiralwin.gift",
+          "gol.gift",
+          "newhome.gifts"
+        ];
 
-      for (RegExpMatch match in matchList) {
-        String domain1 = match.group(2)!.split(".").last;
-        String domain2 = match.group(3)!;
-        String domain = "$domain1.$domain2";
+        for (RegExpMatch match in matchList) {
+          String domain1 = match.group(2)!.split(".").last;
+          String domain2 = match.group(3)!;
+          String domain = "$domain1.$domain2";
 
-        bool isWhitelisted = domainWhitelist.contains(domain);
-        bool isBlacklisted = phishingLinkList.contains(domain);
-        bool isUnknownSuspiciousLink = domain1.contains("disc") ||
-            domain1.contains("steam") ||
-            domain2.contains("gift");
+          bool isWhitelisted = domainWhitelist.contains(domain);
+          bool isBlacklisted = phishingLinkList.contains(domain);
+          bool isUnknownSuspiciousLink = domain1.contains("disc") ||
+              domain1.contains("steam") ||
+              domain2.contains("gift");
 
-        bool phishing =
-            !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
+          bool phishing =
+              !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
 
-        if (phishing) {
-          /// 符合詐騙連結條件
-          _onPhishing(message, ban: true);
+          if (phishing) {
+            /// 符合詐騙連結條件
+            _onPhishing(message, ban: true);
+          }
         }
+      } else if (phishingTermList.any((e) => messageContent.contains(e))) {
+        /// 詐騙關鍵字
+        _onPhishing(message, ban: false);
       }
-    } else if (phishingTermList.any((e) => messageContent.contains(e))) {
-      /// 詐騙關鍵字
-      _onPhishing(message, ban: false);
+    } catch (error, stackTrace) {
+      logger.error(error: error, stackTrace: stackTrace);
     }
   }
 
