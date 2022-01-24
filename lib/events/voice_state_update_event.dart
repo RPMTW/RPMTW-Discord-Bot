@@ -1,56 +1,65 @@
+// ignore_for_file: implementation_imports
+
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:nyxx/src/internal/http_endpoints.dart';
+import 'package:nyxx/src/internal/http/http_request.dart';
+
+Map<Snowflake, IVoiceGuildChannel> _createdChannel = {};
 
 class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
-  List<Snowflake> _joinedUsers = [];
-
   @override
   Future<void> handler(client, event) async {
-    IVoiceState state = event.state;
-    IChannel? channel = await state.channel?.getOrDownload();
-    IGuild? guild = await state.guild?.getOrDownload();
-    final Snowflake categoryID = 815819581440262145.toSnowflake();
+    try {
+      IVoiceState state = event.state;
+      IChannel? channel = await state.channel?.getOrDownload();
+      IGuild? guild = await state.guild?.getOrDownload();
+      final Snowflake categoryID = 815819581440262145.toSnowflake();
 
-    if (channel != null && guild != null && channel is IVoiceGuildChannel) {
-      final IUser user = await state.user.getOrDownload();
-      if (channel.id == voiceChannelID) {
-        print("test1");
+      if (guild != null) {
+        final IUser user = await state.user.getOrDownload();
 
-        final ChannelBuilder newVoiceChannel =
-            _VoiceChannelBuilder.create("${user.username} 的頻道",
-                permissionOverwrites: [
-                  {"id": user.id.toString(), "allow": 871368465}
-                ],
-                parent: categoryID);
+        if (channel != null &&
+            channel.id == voiceChannelID &&
+            channel is IVoiceGuildChannel) {
+              
+          final ChannelBuilder newVoiceChannel =
+              _VoiceChannelBuilder.create("${user.username} 的頻道",
+                  permissionOverwrites: [
+                    {"id": user.id.toString(), "allow": 871368465}
+                  ],
+                  parent: categoryID);
 
-        final IVoiceGuildChannel guildChannel =
-            await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
+          final IVoiceGuildChannel guildChannel =
+              await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
 
-        await guildChannel.editChannelPermissionOverrides(
-            PermissionOverrideBuilder(1, user.id)..manageRoles = true);
+          await guildChannel.editChannelPermissionOverrides(
+              PermissionOverrideBuilder(1, user.id)..manageRoles = true);
 
-        IInvite invite = await guildChannel.createInvite();
+          // IMember member = await guild.fetchMember(user.id);
 
-        await user.sendMessage(MessageBuilder.content(
-            "<@${user.id}> 您好，請點選下方按鈕來加入您剛才建立的頻道 ${invite.url}"));
+          // await member.edit(channel: guildChannel.id, nick: null);
 
-        logger.info("成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)");
-      } else if (channel.parentChannel?.getFromCache()?.id == categoryID) {
-        /// 如果該頻道內有管理權限的人退出頻道了，則將語音頻道刪除
-        print("test2");
+          HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
 
-        if (_joinedUsers.contains(user.id) &&
-            channel.permissionOverrides.any((permission) =>
-                permission.id == user.id &&
-                permission.permissions.hasPermission(
-                    PermissionsConstants.manageRolesOrPermissions))) {
-          _joinedUsers.remove(user.id);
-          await channel.delete();
-        } else {
-          _joinedUsers.add(user.id);
+          await httpEndpoints.executeSafe(BasicRequest(
+              "/guilds/${guild.id.toString()}/members/${user.id.toString()}",
+              method: "PATCH",
+              body: {"channel_id": guildChannel.id.toString()}));
+
+          logger.info("成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)");
+          _createdChannel[user.id] = guildChannel;
+        } else if (channel == null && _createdChannel.containsKey(user.id)) {
+          /// 離開時頻道為 null
+          final IVoiceGuildChannel guildChannel = _createdChannel[user.id]!;
+
+          _createdChannel.remove(user.id);
+          await guildChannel.delete();
         }
       }
+    } catch (e, stackTrace) {
+      logger.error(error: e, stackTrace: stackTrace);
     }
   }
 }

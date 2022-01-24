@@ -74,8 +74,6 @@ class Interactions {
         RPMTWApiClient apiClient = RPMTWApiClient.lastInstance;
         MinecraftMod mod =
             await apiClient.minecraftResource.getMinecraftMod(uuid);
-        WikiModData wikiModData =
-            await apiClient.minecraftResource.getWikiModDataByModUUID(uuid);
 
         ComponentMessageBuilder componentMessageBuilder =
             ComponentMessageBuilder();
@@ -84,18 +82,18 @@ class Interactions {
               "在 RPMWiki 上檢視此模組", "https://wiki.rpmtw.com/#/mod/view/$uuid"));
         componentMessageBuilder.addComponentRow(row);
 
-        if (wikiModData.imageStorageUUID != null) {
+        if (mod.imageStorageUUID != null) {
           Uint8List bytes = await apiClient.storageResource
-              .getStorageBytes(wikiModData.imageStorageUUID!);
+              .getStorageBytes(mod.imageStorageUUID!);
           componentMessageBuilder.addBytesAttachment(bytes, "mod_image.png");
         }
 
         EmbedBuilder embed = EmbedBuilder();
         embed.title = mod.name;
         embed.description = mod.description;
-        if (wikiModData.translatedName != null &&
-            wikiModData.translatedName != "") {
-          embed.addField(name: "模組譯名", content: wikiModData.translatedName);
+        if (mod.translatedName != null &&
+            mod.translatedName != "") {
+          embed.addField(name: "模組譯名", content: mod.translatedName);
         }
         if (mod.id != null && mod.id != "") {
           embed.addField(name: "模組 ID", content: mod.id);
@@ -104,7 +102,7 @@ class Interactions {
             name: "支援的遊戲版本",
             content: mod.supportVersions.map((e) => e.id).join("、"));
         embed.addField(
-            name: "瀏覽次數", content: wikiModData.viewCount, inline: true);
+            name: "瀏覽次數", content: mod.viewCount, inline: true);
 
         embed.timestamp = DateTime.now();
 

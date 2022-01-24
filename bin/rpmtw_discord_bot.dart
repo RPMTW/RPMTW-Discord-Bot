@@ -8,10 +8,10 @@ void main(List<String> arguments) {
   Data.init();
   INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
     env['DISCORD_TOKEN']!,
-    GatewayIntents.allUnprivileged,
+    GatewayIntents.all,
     options: ClientOptions(
-     // dispatchRawShardEvent: true
-    ),
+        // dispatchRawShardEvent: true
+        ),
   );
 
   client.registerPlugin(Logging());
