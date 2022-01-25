@@ -20,7 +20,7 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
       if (guild != null) {
         final IUser user = await state.user.getOrDownload();
 
-        if (_createdChannel.containsKey(user.id)) {
+        if (_createdChannel.containsKey(user.id)  && (channel == null || channel.id == voiceChannelID)) {
           final IVoiceGuildChannel guildChannel = _createdChannel[user.id]!;
 
           _createdChannel.remove(user.id);
