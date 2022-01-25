@@ -79,7 +79,7 @@ class Interactions {
             ComponentMessageBuilder();
         final row = ComponentRowBuilder()
           ..addComponent(LinkButtonBuilder(
-              "在 RPMWiki 上檢視此模組", "https://wiki.rpmtw.com/#/mod/view/$uuid"));
+              "在 RPMWiki 上檢視此模組", "https://wiki.rpmtw.com/mod/view/$uuid"));
         componentMessageBuilder.addComponentRow(row);
 
         if (mod.imageStorageUUID != null) {
