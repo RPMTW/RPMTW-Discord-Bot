@@ -23,22 +23,17 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
         if (channel != null &&
             channel.id == voiceChannelID &&
             channel is IVoiceGuildChannel) {
-              
-          final ChannelBuilder newVoiceChannel =
-              _VoiceChannelBuilder.create("${user.username} 的頻道",
-                  permissionOverwrites: [
-                    {"id": user.id.toString(), "allow": 871368465}
-                  ],
-                  parent: categoryID);
+          final ChannelBuilder newVoiceChannel = _VoiceChannelBuilder.create(
+              "${user.username} 的頻道",
+              permissionOverwrites: PermissionOverrideBuilder(1, user.id)
+                ..manageRoles = true,
+              parent: categoryID);
 
           final IVoiceGuildChannel guildChannel =
               await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
 
-          await guildChannel.editChannelPermissionOverrides(
-              PermissionOverrideBuilder(1, user.id)..manageRoles = true);
-
+          // https://github.com/nyxx-discord/nyxx/pull/293
           // IMember member = await guild.fetchMember(user.id);
-
           // await member.edit(channel: guildChannel.id, nick: null);
 
           HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
@@ -70,20 +65,31 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
   /// category id
   Snowflake? parent;
 
-  _VoiceChannelBuilder(this.name, {this.parent}) {
+  PermissionOverrideBuilder? permissionOverwrites;
+
+  _VoiceChannelBuilder(this.name, {this.parent, this.permissionOverwrites}) {
     type = ChannelType.voice;
   }
 
   _VoiceChannelBuilder.create(
     String name, {
     Snowflake? parent,
-    List<Map>? permissionOverwrites,
-  }) : this(name, parent: parent);
+    PermissionOverrideBuilder? permissionOverwrites,
+  }) : this(name, parent: parent, permissionOverwrites: permissionOverwrites);
 
   @override
   RawApiMap build() => {
         ...super.build(),
         "name": name,
+        if (permissionOverwrites != null)
+          "permission_overwrites": [
+            {
+              "id": permissionOverwrites!.id.toString(),
+              "type": permissionOverwrites!.type.toString(),
+              "allow": permissionOverwrites!.build().allow,
+              "deny": permissionOverwrites!.build().deny,
+            }
+          ],
         if (parent != null) "parent_id": parent!.id.toString(),
         if (bitrate != null) "bitrate": bitrate,
         if (userLimit != null) "user_limit": userLimit,
