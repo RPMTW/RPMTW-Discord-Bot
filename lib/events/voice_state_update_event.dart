@@ -20,9 +20,12 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
       if (guild != null) {
         final IUser user = await state.user.getOrDownload();
 
-        if (channel != null &&
-            channel.id == voiceChannelID &&
-            channel is IVoiceGuildChannel) {
+        if (_createdChannel.containsKey(user.id)) {
+          final IVoiceGuildChannel guildChannel = _createdChannel[user.id]!;
+
+          _createdChannel.remove(user.id);
+          await guildChannel.delete();
+        } else if (channel != null && channel.id == voiceChannelID) {
           final ChannelBuilder newVoiceChannel = _VoiceChannelBuilder.create(
               "${user.username} 的頻道",
               permissionOverwrites: PermissionOverrideBuilder(1, user.id)
@@ -45,12 +48,6 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
 
           logger.info("成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)");
           _createdChannel[user.id] = guildChannel;
-        } else if (channel == null && _createdChannel.containsKey(user.id)) {
-          /// 離開時頻道為 null
-          final IVoiceGuildChannel guildChannel = _createdChannel[user.id]!;
-
-          _createdChannel.remove(user.id);
-          await guildChannel.delete();
         }
       }
     } catch (e, stackTrace) {
