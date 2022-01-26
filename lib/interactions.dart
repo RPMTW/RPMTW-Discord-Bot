@@ -10,8 +10,12 @@ class Interactions {
     SlashCommandBuilder _cmd =
         SlashCommandBuilder("hello", "跟你打招呼", [], guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
-      String userTag = event.interaction.userAuthor!.tag;
-      await event.respond(MessageBuilder.content("嗨，$userTag ！"));
+      try {
+        String userTag = event.interaction.userAuthor!.tag;
+        await event.respond(MessageBuilder.content("嗨，$userTag ！"));
+      } catch (e) {
+        print(e);
+      }
     });
     return _cmd;
   }
@@ -26,33 +30,39 @@ class Interactions {
         ],
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
-      await event.acknowledge();
-      String? filter;
       try {
-        filter = event.getArg("filter").value;
-        if (filter == "" || filter == "null") filter = null;
+        await event.acknowledge();
+        String? filter;
+        try {
+          filter = event.getArg("filter").value;
+          if (filter == "" || filter == "null") filter = null;
+        } catch (e) {
+          filter = null;
+        }
+        RPMTWApiClient apiClient = RPMTWApiClient.lastInstance;
+        List<MinecraftMod> mods =
+            await apiClient.minecraftResource.search(filter: filter);
+        mods = mods.take(5).toList();
+
+        EmbedBuilder embed = EmbedBuilder();
+        embed.title = "模組搜尋結果";
+        embed.description =
+            "共搜尋到 ${mods.length} 個模組，由於 Discord 技術限制最多只會顯示 5 個模組";
+        embed.timestamp = DateTime.now();
+
+        for (MinecraftMod mod in mods) {
+          embed.addField(
+            name: mod.name,
+            content: mod.description,
+          );
+        }
+
+        await event.respond(MessageBuilder.embed(embed));
       } catch (e) {
-        filter = null;
+        print(e);
       }
-      RPMTWApiClient apiClient = RPMTWApiClient.lastInstance;
-      List<MinecraftMod> mods =
-          await apiClient.minecraftResource.search(filter: filter);
-      mods = mods.take(5).toList();
-
-      EmbedBuilder embed = EmbedBuilder();
-      embed.title = "模組搜尋結果";
-      embed.description = "共搜尋到 ${mods.length} 個模組，由於 Discord 技術限制最多只會顯示 5 個模組";
-      embed.timestamp = DateTime.now();
-
-      for (MinecraftMod mod in mods) {
-        embed.addField(
-          name: mod.name,
-          content: mod.description,
-        );
-      }
-
-      await event.respond(MessageBuilder.embed(embed));
     });
+
     return _cmd;
   }
 
@@ -91,8 +101,7 @@ class Interactions {
         EmbedBuilder embed = EmbedBuilder();
         embed.title = mod.name;
         embed.description = mod.description;
-        if (mod.translatedName != null &&
-            mod.translatedName != "") {
+        if (mod.translatedName != null && mod.translatedName != "") {
           embed.addField(name: "模組譯名", content: mod.translatedName);
         }
         if (mod.id != null && mod.id != "") {
@@ -101,8 +110,7 @@ class Interactions {
         embed.addField(
             name: "支援的遊戲版本",
             content: mod.supportVersions.map((e) => e.id).join("、"));
-        embed.addField(
-            name: "瀏覽次數", content: mod.viewCount, inline: true);
+        embed.addField(name: "瀏覽次數", content: mod.viewCount, inline: true);
 
         embed.timestamp = DateTime.now();
 
