@@ -21,7 +21,12 @@ class Logger {
     embed.color = DiscordColor.green;
     embed.timestamp = DateTime.now();
     print("[${DateTime.now()}] [INFO] $message");
-    await channel?.sendMessage(MessageBuilder.embed(embed));
+    try {
+      await channel?.sendMessage(MessageBuilder.embed(embed));
+    } catch (e) {
+      print(
+          "[${DateTime.now()}] [Error] Failed to send info message to discord\n${e.toString()}");
+    }
   }
 
   Future<void> error(
@@ -36,6 +41,11 @@ class Logger {
     embed.timestamp = DateTime.now();
     print(
         "[${DateTime.now()}] [Error] ${error.toString()}\n${stackTrace.toString()}");
-    await channel?.sendMessage(MessageBuilder.embed(embed));
+    try {
+      await channel?.sendMessage(MessageBuilder.embed(embed));
+    } catch (e) {
+      print(
+          "[${DateTime.now()}] [Error] Failed to send error message to discord\n${e.toString()}");
+    }
   }
 }

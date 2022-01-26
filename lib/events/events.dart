@@ -17,9 +17,8 @@ class Events {
           .listen((event) => MessageDeleteEvent().handler(client, event));
       client.eventsWs.onMessageUpdate
           .listen((event) => MessageUpdateEvent().handler(client, event));
-      client.eventsWs.onVoiceStateUpdate.listen((event) {
-        VoiceStateUpdateEvent().handler(client, event);
-      });
+      client.eventsWs.onVoiceStateUpdate
+          .listen((event) => VoiceStateUpdateEvent().handler(client, event));
     } catch (error, stackTrace) {
       logger.error(error: error, stackTrace: stackTrace);
     }
