@@ -7,8 +7,8 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
   @override
   Future<void> handler(client, event) async {
     try {
-      if (event.updatedMessage != null) {
-        IMessage updatedMessage = event.updatedMessage!;
+      IMessage? updatedMessage = event.updatedMessage;
+      if (updatedMessage != null) {
         // IMessage? oldMessage = updatedMessage.channel
         //     .getFromCache()!
         //     .messageCache[updatedMessage.id];
