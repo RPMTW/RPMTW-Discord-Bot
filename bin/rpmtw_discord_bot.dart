@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
@@ -5,7 +7,7 @@ import 'package:rpmtw_discord_bot/interactions.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:logging/logging.dart' as logging;
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
   Data.init();
   if (kDebugMode) {
     logging.Logger.root.level = logging.Level.ALL;
@@ -17,9 +19,13 @@ void main(List<String> arguments) {
         // dispatchRawShardEvent: true
         ),
   );
+  ProcessSignal.sigint.watch().forEach((event) async {
+    await client.dispose();
+    exit(0);
+  });
 
   client.registerPlugin(Logging());
-  client.registerPlugin(CliIntegration());
+  // client.registerPlugin(CliIntegration());
   client.registerPlugin(IgnoreExceptions());
   client.connect();
 
