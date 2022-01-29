@@ -19,14 +19,10 @@ void main(List<String> arguments) async {
         // dispatchRawShardEvent: true
         ),
   );
-  ProcessSignal.sigint.watch().forEach((event) async {
-    await client.dispose();
-    exit(0);
-  });
 
   client.registerPlugin(Logging());
   // client.registerPlugin(CliIntegration());
-  client.registerPlugin(IgnoreExceptions());
+  // client.registerPlugin(IgnoreExceptions());
   client.connect();
 
   /// Register all commands
