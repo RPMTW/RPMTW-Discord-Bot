@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
@@ -26,7 +24,7 @@ void main(List<String> arguments) async {
   client.connect();
 
   /// Register all commands
-  // Interactions.register(client);
+  Interactions.register(client);
 
   /// Register all events
   Events.register(client);
