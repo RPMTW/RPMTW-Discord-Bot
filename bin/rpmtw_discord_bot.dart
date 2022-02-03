@@ -13,6 +13,7 @@ void main(List<String> arguments) async {
   INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
     env['DISCORD_TOKEN']!,
     GatewayIntents.all,
+    ignoreExceptions: false,
     options: ClientOptions(
         // dispatchRawShardEvent: true
         ),
