@@ -63,10 +63,14 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
             _onPhishing(message, ban: true);
           }
         }
-      } else if (phishingTermList.any((e) => messageContent.contains(e))) {
+      } 
+
+      /*
+      else if (phishingTermList.any((e) => messageContent.contains(e))) {
         /// 詐騙關鍵字
         _onPhishing(message, ban: false);
       }
+      */
     } catch (error, stackTrace) {
       logger.error(error: error, stackTrace: stackTrace);
     }

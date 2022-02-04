@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:nyxx/nyxx.dart';
@@ -132,6 +133,14 @@ class Interactions {
     _cmd.registerHandler((event) async {
       try {
         INyxxWebsocket client = event.client as INyxxWebsocket;
+
+        String getMemoryUsage() {
+          final current =
+              (ProcessInfo.currentRss / 1024 / 1024).toStringAsFixed(2);
+          final rss = (ProcessInfo.maxRss / 1024 / 1024).toStringAsFixed(2);
+          return "$current/${rss}MB";
+        }
+
         DateTime now = DateTime.now();
         DateTime start = client.startTime;
 
@@ -141,7 +150,23 @@ class Interactions {
           author.iconUrl = client.self.avatarURL();
           author.url = "https://github.com/RPMTW/RPMTW-Discord-Bot";
         });
-        embed.addField(name: "正常運作時間",content: "${now.difference(start).inMinutes} 分鐘");
+        embed.addField(
+            name: "正常運作時間", content: "${now.difference(start).inMinutes} 分鐘");
+        embed.addField(
+            name: "記憶體用量 (目前使用量/常駐記憶體大小)", content: getMemoryUsage());
+        embed.addField(
+            name: "使用者快取", content: client.users.length, inline: true);
+        embed.addField(
+            name: "頻道快取",
+            content: client.channels.length,
+            inline: true);
+        embed.addField(
+            name: "訊息快取",
+            content: client.channels.values
+                .whereType<ITextChannel>()
+                .map((e) => e.messageCache.length)
+                .fold(0, (first, second) => (first as int) + second),
+            inline: true);
 
         await event.respond(MessageBuilder.embed(embed));
       } catch (e) {
