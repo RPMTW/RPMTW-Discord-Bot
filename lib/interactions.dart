@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
@@ -126,6 +127,31 @@ class Interactions {
     return _cmd;
   }
 
+  static SlashCommandBuilder get info {
+    SlashCommandBuilder _cmd = SlashCommandBuilder("info", "查看此機器人的資訊", [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        INyxxWebsocket client = event.client as INyxxWebsocket;
+        DateTime now = DateTime.now();
+        DateTime start = client.startTime;
+
+        EmbedBuilder embed = EmbedBuilder();
+        embed.addAuthor((author) {
+          author.name = client.self.tag;
+          author.iconUrl = client.self.avatarURL();
+          author.url = "https://github.com/RPMTW/RPMTW-Discord-Bot";
+        });
+        embed.addField(name: "正常運作時間",content: "${now.difference(start).inMinutes} 分鐘");
+
+        await event.respond(MessageBuilder.embed(embed));
+      } catch (e) {
+        print(e);
+      }
+    });
+    return _cmd;
+  }
+
   static void register(INyxxWebsocket client) {
     IInteractions interactions =
         IInteractions.create(WebsocketInteractionBackend(client));
@@ -133,6 +159,7 @@ class Interactions {
     interactions.registerSlashCommand(hello);
     interactions.registerSlashCommand(searchMods);
     interactions.registerSlashCommand(viewMod);
+    interactions.registerSlashCommand(info);
 
     interactions.syncOnReady();
   }
