@@ -8,9 +8,9 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
     try {
       IMessage message = event.message;
       if (message.author.bot) return;
-      String messageContent = message.content;
+      final String messageContent = message.content;
 
-      RegExp urlRegex = RegExp(
+      final RegExp urlRegex = RegExp(
           r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
       if (urlRegex.hasMatch(messageContent)) {
@@ -63,7 +63,7 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
             _onPhishing(message, ban: true);
           }
         }
-      } 
+      }
 
       /*
       else if (phishingTermList.any((e) => messageContent.contains(e))) {
