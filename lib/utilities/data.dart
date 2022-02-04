@@ -15,8 +15,8 @@ Snowflake get voiceChannelID => 832895058281758740.toSnowflake();
 
 late Logger _logger;
 Logger get logger => _logger;
-late List<String> phishingLinkList;
-late List<String> phishingTermList;
+late final List<String> phishingLinkList;
+late final List<String> phishingTermList;
 late bool kDebugMode;
 
 class Data {

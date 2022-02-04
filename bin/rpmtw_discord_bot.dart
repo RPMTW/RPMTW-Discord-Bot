@@ -25,7 +25,7 @@ void main(List<String> arguments) async {
   client.connect();
 
   /// Register all commands
-  // Interactions.register(client);
+  Interactions.register(client);
 
   /// Register all events
   Events.register(client);
