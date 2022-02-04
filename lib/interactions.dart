@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
