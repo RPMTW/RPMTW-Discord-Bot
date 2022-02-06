@@ -157,9 +157,7 @@ class Interactions {
         embed.addField(
             name: "使用者快取", content: client.users.length, inline: true);
         embed.addField(
-            name: "頻道快取",
-            content: client.channels.length,
-            inline: true);
+            name: "頻道快取", content: client.channels.length, inline: true);
         embed.addField(
             name: "訊息快取",
             content: client.channels.values
@@ -167,6 +165,7 @@ class Interactions {
                 .map((e) => e.messageCache.length)
                 .fold(0, (first, second) => (first as int) + second),
             inline: true);
+        embed.addField(name: "Shard 數量", content: client.shards, inline: true);
 
         await event.respond(MessageBuilder.embed(embed));
       } catch (e) {
