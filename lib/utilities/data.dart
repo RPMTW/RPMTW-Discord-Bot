@@ -13,7 +13,7 @@ Snowflake get logChannelID => 934595900528025640.toSnowflake();
 Snowflake get siongsngUserID => 645588343228334080.toSnowflake();
 Snowflake get voiceChannelID => 832895058281758740.toSnowflake();
 
-late Logger _logger;
+late final Logger _logger;
 Logger get logger => _logger;
 late final List<String> phishingLinkList;
 late final List<String> phishingTermList;
@@ -37,7 +37,8 @@ class Data {
   }
 
   static Future<void> initOnReady(INyxxWebsocket client) async {
-    _logger = Logger(client);
-    await _logger.init();
+    ITextChannel channel =
+        await client.fetchChannel<ITextChannel>(logChannelID);
+    _logger = Logger(client, channel);
   }
 }
