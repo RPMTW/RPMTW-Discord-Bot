@@ -13,21 +13,5 @@ class ReadyEvent implements BaseEvent<IReadyEvent> {
 
     await Data.initOnReady(client);
     logger.info('${client.self.tag} Ready!');
-
-    Timer.periodic(Duration(hours: 1), (timer) {
-      client.channels.values.whereType<ITextChannel>().forEach((channel) async {
-        Map<Snowflake, IMessage> cache =
-            Map<Snowflake, IMessage>.from(channel.messageCache);
-        List<IMessage> toDelete = [];
-        cache.forEach((key, msg) {
-          if (msg.createdAt
-              .isBefore(DateTime.now().subtract(Duration(hours: 2)))) {
-            /// Delete message cache if older than 2 hour
-            toDelete.add(msg);
-          }
-        });
-        await channel.bulkRemoveMessages(toDelete);
-      });
-    });
   }
 }
