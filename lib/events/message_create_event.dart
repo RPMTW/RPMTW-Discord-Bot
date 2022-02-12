@@ -13,7 +13,8 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
       final RegExp urlRegex = RegExp(
           r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
-      if (urlRegex.hasMatch(messageContent)) {
+      if (messageContent.contains("http") &&
+          urlRegex.hasMatch(messageContent)) {
         /// 訊息內容包含網址
 
         List<RegExpMatch> matchList =
