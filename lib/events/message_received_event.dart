@@ -2,7 +2,7 @@ import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
-class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
+class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
   @override
   Future<void> handler(client, event) async {
     try {
@@ -13,8 +13,9 @@ class MessageCreateEvent implements BaseEvent<IMessageReceivedEvent> {
       final RegExp urlRegex = RegExp(
           r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
-      if (messageContent.contains("http") &&
-          urlRegex.hasMatch(messageContent)) {
+      if (messageContent.contains("https://") || messageContent.contains("http://")) {
+        if (!urlRegex.hasMatch(messageContent)) return;
+
         /// 訊息內容包含網址
 
         List<RegExpMatch> matchList =
