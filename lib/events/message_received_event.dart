@@ -14,6 +14,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
           r"(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
 
       if (messageContent.contains("https://") || messageContent.contains("http://")) {
+        logger.info("Message contains url");
         if (!urlRegex.hasMatch(messageContent)) return;
 
         /// 訊息內容包含網址
