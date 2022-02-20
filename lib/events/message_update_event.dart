@@ -2,6 +2,7 @@ import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/changelog.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/utilities/fraud_detection.dart';
 
 class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
   @override
@@ -14,6 +15,7 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
         //     .messageCache[updatedMessage.id];
 
         if (updatedMessage.content != "null") {
+          await FraudDetection.detection(client, updatedMessage);
           await Changelog(client).edit(updatedMessage);
         }
       }
