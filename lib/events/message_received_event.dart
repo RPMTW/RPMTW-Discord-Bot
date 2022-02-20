@@ -3,7 +3,7 @@ import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 String _pattern =
-    r'(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
+    r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
 RegExp _urlRegex = RegExp(_pattern);
 
 class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
@@ -49,15 +49,22 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
         ];
 
         for (RegExpMatch match in matchList) {
-          String domain1 = match.group(2)!.split(".").last;
-          String domain2 = match.group(3)!;
+          String matchString = match.input;
+          Uri? uri = Uri.tryParse(matchString);
+          if (uri == null) continue;
+          List<String> domainList = uri.host.split(".");
+          List<String> keywords = ["disc", "steam", "gift"];
+
+          String domain1 =
+              domainList.length > 3 ? domainList[1] : domainList[0];
+          String domain2 =
+              domainList.length > 3 ? domainList[2] : domainList[1];
           String domain = "$domain1.$domain2";
 
           bool isWhitelisted = domainWhitelist.contains(domain);
           bool isBlacklisted = phishingLinkList.contains(domain);
-          bool isUnknownSuspiciousLink = domain1.contains("disc") ||
-              domain1.contains("steam") ||
-              domain2.contains("gift");
+          bool isUnknownSuspiciousLink =
+              keywords.any((e) => domain1.contains(e) || domain2.contains(e));
 
           bool phishing =
               !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
