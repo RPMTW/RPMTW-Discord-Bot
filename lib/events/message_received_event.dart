@@ -1,3 +1,5 @@
+// ignore_for_file: implementation_imports
+
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
@@ -32,6 +34,8 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
           "discord.com",
           "discordapp.com",
           "discordapp.net",
+          "discordstatus.com",
+          "discord.media"
 
           /// 社群域名
           "discordresources.com",
@@ -58,9 +62,9 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
           List<String> keywords = ["disc", "steam", "gift"];
 
           String domain1 =
-              domainList.length > 3 ? domainList[1] : domainList[0];
+              domainList.length >= 3 ? domainList[1] : domainList[0];
           String domain2 =
-              domainList.length > 3 ? domainList[2] : domainList[1];
+              domainList.length >= 3 ? domainList[2] : domainList[1];
           String domain = "$domain1.$domain2";
 
           bool isWhitelisted = domainWhitelist.contains(domain);
