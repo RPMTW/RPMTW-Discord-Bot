@@ -1,6 +1,8 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:nyxx/src/internal/http_endpoints.dart';
+import 'package:nyxx/src/internal/http/http_request.dart';
 
 String _pattern =
     r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
@@ -71,7 +73,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
 
           if (phishing) {
             /// 符合詐騙連結條件
-            _onPhishing(message, ban: true);
+            _onPhishing(message, client, ban: true);
           }
         }
       }
@@ -87,11 +89,12 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
     }
   }
 
-  Future<void> _onPhishing(IMessage message, {required bool ban}) async {
+  Future<void> _onPhishing(IMessage message, INyxxWebsocket client,
+      {required bool ban}) async {
     final ReplyBuilder replyBuilder = ReplyBuilder.fromMessage(message);
     IMessageAuthor author = message.author;
     MessageBuilder messageBuilder = MessageBuilder.content(
-        "偵測到 <@${author.id}> 發送了詐騙訊息，因此已立即停權 <@${author.id}>，其他人請勿點選此詐騙訊息。");
+        "偵測到 <@${author.id}> 發送了詐騙訊息，因此已立即停權 <@${author.id}>，其他人請勿點選此詐騙訊息，如認為有誤判請聯繫 <@645588343228334080>。");
     messageBuilder.replyBuilder = replyBuilder;
 
     await message.channel.sendMessage(messageBuilder);
@@ -99,13 +102,19 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
 
     if (message.guild != null) {
       IGuild guild = message.guild!.getFromCache()!;
-      String auditReason =
+      String reason =
           "違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。";
 
       if (ban) {
-        await guild.ban(author, deleteMessageDays: 1, auditReason: auditReason);
+        //  await guild.ban(author, deleteMessageDays: 1, auditReason: reason);
+        HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
+
+        await httpEndpoints.executeSafe(BasicRequest(
+            "/guilds/${guild.id}/bans/${author.id}",
+            method: "PUT",
+            body: {"delete-message-days": 1, "reason": reason}));
       } else {
-        await guild.kick(author, auditReason: auditReason);
+        await guild.kick(author);
       }
     }
     await logger.info("偵測到 <@${author.id}> 在 <#${message.channel.id}> 發送詐騙訊息");
