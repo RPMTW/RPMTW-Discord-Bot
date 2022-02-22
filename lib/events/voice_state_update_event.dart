@@ -20,7 +20,8 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
       if (guild != null) {
         final IUser user = await state.user.getOrDownload();
 
-        if (_createdChannel.containsKey(user.id)  && (channel == null || channel.id == voiceChannelID)) {
+        if (_createdChannel.containsKey(user.id) &&
+            (channel == null || channel.id == voiceChannelID)) {
           final IVoiceGuildChannel guildChannel = _createdChannel[user.id]!;
 
           _createdChannel.remove(user.id);
@@ -80,12 +81,7 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
         "name": name,
         if (permissionOverwrites != null)
           "permission_overwrites": [
-            {
-              "id": permissionOverwrites!.id.toString(),
-              "type": permissionOverwrites!.type.toString(),
-              "allow": permissionOverwrites!.build().allow,
-              "deny": permissionOverwrites!.build().deny,
-            }
+            permissionOverwrites!.build(),
           ],
         if (parent != null) "parent_id": parent!.id.toString(),
         if (bitrate != null) "bitrate": bitrate,

@@ -40,7 +40,7 @@ class Interactions {
         } catch (e) {
           filter = null;
         }
-        RPMTWApiClient apiClient = RPMTWApiClient.lastInstance;
+        RPMTWApiClient apiClient = RPMTWApiClient.instance;
         List<MinecraftMod> mods =
             await apiClient.minecraftResource.search(filter: filter);
         mods = mods.take(5).toList();
@@ -82,7 +82,7 @@ class Interactions {
       try {
         String uuid = event.getArg("uuid").value;
 
-        RPMTWApiClient apiClient = RPMTWApiClient.lastInstance;
+        RPMTWApiClient apiClient = RPMTWApiClient.instance;
         MinecraftMod mod =
             await apiClient.minecraftResource.getMinecraftMod(uuid);
 
