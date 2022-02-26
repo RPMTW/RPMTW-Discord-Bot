@@ -2,6 +2,7 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx/src/internal/http_endpoints.dart';
 import 'package:nyxx/src/internal/http/http_request.dart';
+import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 class ScamDetection {
@@ -55,7 +56,7 @@ class ScamDetection {
         String domain = "$domain1.$domain2";
 
         bool isWhitelisted = domainWhitelist.contains(domain);
-        bool isBlacklisted = phishingLinkList.contains(domain);
+        bool isBlacklisted = phishingLink.contains(domain);
         bool isUnknownSuspiciousLink =
             keywords.any((e) => domain1.contains(e) || domain2.contains(e));
 
@@ -81,13 +82,13 @@ class ScamDetection {
     if (phishing) {
       /// 符合詐騙連結條件
       _onPhishing(message, client, ban: true);
-    }
+    } 
     /*
-      else if (phishingTermList.any((e) => messageContent.contains(e))) {
-        /// 詐騙關鍵字
-        _onPhishing(message, ban: false);
-      }
-      */
+    else if (phishingTerms.any((e) => messageContent.contains(e))) {
+      /// 詐騙關鍵字
+      _onPhishing(message, client, ban: false);
+    }
+    */
   }
 
   static Future<void> _onPhishing(IMessage message, INyxxWebsocket client,

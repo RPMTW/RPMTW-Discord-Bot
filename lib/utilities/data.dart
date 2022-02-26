@@ -15,8 +15,6 @@ Snowflake get voiceChannelID => 832895058281758740.toSnowflake();
 
 late final Logger _logger;
 Logger get logger => _logger;
-late final List<String> phishingLinkList;
-late final List<String> phishingTermList;
 late bool kDebugMode;
 
 class Data {
@@ -25,15 +23,6 @@ class Data {
     RPMTWApiClient.init();
 
     kDebugMode = env['DEBUG_MODE']?.toBool() ?? false;
-    String phishingLink =
-        File(join(Directory.current.path, "lib", "data", "phishing_link.txt"))
-            .readAsStringSync();
-    phishingLinkList = LineSplitter().convert(phishingLink);
-
-    String phishingTerms =
-        File(join(Directory.current.path, "lib", "data", "phishing_terms.txt"))
-            .readAsStringSync();
-    phishingTermList = LineSplitter().convert(phishingTerms);
   }
 
   static Future<void> initOnReady(INyxxWebsocket client) async {
