@@ -15,7 +15,7 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
         //     .messageCache[updatedMessage.id];
 
         if (updatedMessage.content != "null") {
-          await FraudDetection.detectionWithBan(client, updatedMessage);
+          await ScamDetection.detectionWithBan(client, updatedMessage);
           await Changelog(client).edit(updatedMessage);
         }
       }

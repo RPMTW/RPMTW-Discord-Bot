@@ -4,7 +4,7 @@ import 'package:nyxx/src/internal/http_endpoints.dart';
 import 'package:nyxx/src/internal/http/http_request.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
-class FraudDetection {
+class ScamDetection {
   static final RegExp _urlRegex = RegExp(
       r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?');
 
