@@ -10,7 +10,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
       IMessage message = event.message;
       IGuild? guild = await message.guild?.getOrDownload();
       if (guild == null) return;
-      await FraudDetection.detection(client, message);
+      await FraudDetection.detectionWithBan(client, message);
       await _nsfwHandler(guild, message);
     } catch (error, stackTrace) {
       logger.error(error: error, stackTrace: stackTrace);

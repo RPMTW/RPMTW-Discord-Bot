@@ -8,17 +8,13 @@ class FraudDetection {
   static final RegExp _urlRegex = RegExp(
       r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?');
 
-  static Future<void> detection(INyxxWebsocket client, IMessage message) async {
-    if (message.author.bot) return;
-    final String messageContent = message.content;
-    if (messageContent.contains("https://") ||
-        messageContent.contains("http://")) {
-      if (!_urlRegex.hasMatch(messageContent)) return;
+  static bool detection(String message) {
+    if (message.contains("https://") || message.contains("http://")) {
+      if (!_urlRegex.hasMatch(message)) return false;
 
       /// 訊息內容包含網址
 
-      List<RegExpMatch> matchList =
-          _urlRegex.allMatches(messageContent).toList();
+      List<RegExpMatch> matchList = _urlRegex.allMatches(message).toList();
 
       List<String> domainWhitelist = [
         // DC 官方域名
@@ -28,10 +24,10 @@ class FraudDetection {
         "discordapp.com",
         "discordapp.net",
         "discordstatus.com",
-        "discord.media"
+        "discord.media",
 
-            /// 社群域名
-            "discordresources.com",
+        /// 社群域名
+        "discordresources.com",
         "discord.wiki",
 
         // Steam 官方域名
@@ -48,7 +44,7 @@ class FraudDetection {
       ];
 
       for (RegExpMatch match in matchList) {
-        String matchString = match.input;
+        String matchString = message.substring(match.start, match.end);
         Uri? uri = Uri.tryParse(matchString);
         if (uri == null) continue;
         List<String> domainList = uri.host.split(".");
@@ -67,12 +63,25 @@ class FraudDetection {
             !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
 
         if (phishing) {
-          /// 符合詐騙連結條件
-          _onPhishing(message, client, ban: true);
+          return true;
         }
       }
-    }
 
+      return false;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<void> detectionWithBan(
+      INyxxWebsocket client, IMessage message) async {
+    if (message.author.bot) return;
+    final String messageContent = message.content;
+    bool phishing = detection(messageContent);
+    if (phishing) {
+      /// 符合詐騙連結條件
+      _onPhishing(message, client, ban: true);
+    }
     /*
       else if (phishingTermList.any((e) => messageContent.contains(e))) {
         /// 詐騙關鍵字
