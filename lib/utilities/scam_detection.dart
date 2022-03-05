@@ -34,6 +34,7 @@ class ScamDetection {
         // Steam 官方域名
         "steampowered.com",
         "steamcommunity.com",
+        "steamdeck.com",
 
         // 在 Alexa 名列前茅的 .gift 和 .gifts 域名
         "crediter.gift",
@@ -82,7 +83,7 @@ class ScamDetection {
     if (phishing) {
       /// 符合詐騙連結條件
       _onPhishing(message, client, ban: true);
-    } 
+    }
     /*
     else if (phishingTerms.any((e) => messageContent.contains(e))) {
       /// 詐騙關鍵字
