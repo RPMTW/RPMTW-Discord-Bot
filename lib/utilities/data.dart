@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
 import 'package:rpmtw_discord_bot/utilities/log.dart';
 import 'package:rpmtw_discord_bot/utilities/extension.dart';
