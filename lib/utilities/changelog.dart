@@ -7,7 +7,7 @@ class Changelog {
 
   static Snowflake get channelId => 832849374395760660.toSnowflake();
 
-  Future<void> edit(IMessage updated) async {
+  Future<void> edit(IMessage old, IMessage updated) async {
     final ITextChannel channel =
         await client.fetchChannel<ITextChannel>(channelId);
 
@@ -16,7 +16,7 @@ class Changelog {
     embed.title = "訊息修改紀錄";
     embed.description =
         "<@${updated.author.id}> 在 <#${updated.channel.id}> 編輯訊息";
-    // embed.addField(name: "原始訊息", content: before.content);
+    embed.addField(name: "原始訊息", content: old.content);
     embed.addField(name: "修改後訊息", content: updated.content);
     embed.color = DiscordColor.fromHexString("#4deb87");
     embed.timestamp = DateTime.now();

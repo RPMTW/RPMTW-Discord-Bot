@@ -1,5 +1,5 @@
 name: rpmtw_discord_bot
-description: A simple command-line application.
+description: RPMTW Discord Server Bot
 version: 1.0.0
 # homepage: https://www.example.com
 
@@ -10,10 +10,10 @@ dev_dependencies:
   lints: ^1.0.0
 dependencies: 
   dotenv: ^3.0.0
-  nyxx: ^3.2.7
+  nyxx: ^3.3.0
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
-  nyxx_interactions: ^3.3.0
+  nyxx_interactions: ^4.0.0
   nyxx_lavalink: ^3.0.0
   nyxx_pagination: ^2.1.0
   path: ^1.8.1

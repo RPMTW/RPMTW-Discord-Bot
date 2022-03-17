@@ -30,6 +30,11 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
       if (!added) {
         // add "約瑟教" role
         await member.addRole(nsfwRoleID);
+        String prefix = "約瑟．";
+        String name = member.nickname ?? author.username;
+        if (!name.contains(prefix)) {
+          await member.edit(builder: MemberBuilder()..nick = prefix + name);
+        }
       }
     }
   }

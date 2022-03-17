@@ -9,14 +9,16 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
   Future<void> handler(client, event) async {
     try {
       IMessage? updatedMessage = event.updatedMessage;
-      if (updatedMessage != null) {
+      IMessage? oldMessage = event.oldMessage;
+      
+      if (updatedMessage != null && oldMessage != null) {
         // IMessage? oldMessage = updatedMessage.channel
         //     .getFromCache()!
         //     .messageCache[updatedMessage.id];
 
         if (updatedMessage.content != "null") {
           await ScamDetection.detectionWithBan(client, updatedMessage);
-          await Changelog(client).edit(updatedMessage);
+          await Changelog(client).edit(oldMessage, updatedMessage);
         }
       }
     } catch (error, stackTrace) {

@@ -3,8 +3,6 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:nyxx/src/internal/http_endpoints.dart';
-import 'package:nyxx/src/internal/http/http_request.dart';
 
 Map<Snowflake, IVoiceGuildChannel> _createdChannel = {};
 
@@ -36,16 +34,9 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
           final IVoiceGuildChannel guildChannel =
               await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
 
-          // https://github.com/nyxx-discord/nyxx/pull/293
-          // IMember member = await guild.fetchMember(user.id);
-          // await member.edit(channel: guildChannel.id, nick: null);
-
-          HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
-
-          await httpEndpoints.executeSafe(BasicRequest(
-              "/guilds/${guild.id.toString()}/members/${user.id.toString()}",
-              method: "PATCH",
-              body: {"channel_id": guildChannel.id.toString()}));
+          IMember member = await guild.fetchMember(user.id);
+          await member.edit(
+              builder: MemberBuilder()..channel = guildChannel.id);
 
           logger.info("成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)");
           _createdChannel[user.id] = guildChannel;

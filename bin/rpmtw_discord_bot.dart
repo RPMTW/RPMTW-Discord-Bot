@@ -20,7 +20,7 @@ void main(List<String> arguments) async {
   );
 
   client.registerPlugin(Logging());
-  // client.registerPlugin(CliIntegration());
+  client.registerPlugin(CliIntegration());
   // client.registerPlugin(IgnoreExceptions());
   client.connect();
 
@@ -29,6 +29,6 @@ void main(List<String> arguments) async {
 
   /// Register all events
   Events.register(client);
-  
+
   // CosmicChatHandler.init(client);
 }
