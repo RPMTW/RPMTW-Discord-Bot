@@ -1,7 +1,7 @@
 // ignore_for_file: implementation_imports
 import 'package:nyxx/nyxx.dart';
-import 'package:nyxx/src/internal/http_endpoints.dart';
-import 'package:nyxx/src/internal/http/http_request.dart';
+// import 'package:nyxx/src/internal/http_endpoints.dart';
+// import 'package:nyxx/src/internal/http/http_request.dart';
 import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
@@ -75,25 +75,27 @@ class ScamDetection {
     }
   }
 
-  static Future<void> detectionWithBan(
+  static Future<void> detectionWithTimeOut(
       INyxxWebsocket client, IMessage message) async {
     if (message.author.bot) return;
     final String messageContent = message.content;
     bool phishing = detection(messageContent);
     if (phishing) {
       /// 符合詐騙連結條件
-      _onPhishing(message, client, ban: true);
+      _onPhishing(message, client);
     }
     /*
     else if (phishingTerms.any((e) => messageContent.contains(e))) {
       /// 詐騙關鍵字
-      _onPhishing(message, client, ban: false);
+      _onPhishing(message, client);
     }
     */
   }
 
-  static Future<void> _onPhishing(IMessage message, INyxxWebsocket client,
-      {required bool ban}) async {
+  static Future<void> _onPhishing(
+    IMessage message,
+    INyxxWebsocket client,
+  ) async {
     final ReplyBuilder replyBuilder = ReplyBuilder.fromMessage(message);
     IMessageAuthor author = message.author;
     MessageBuilder messageBuilder = MessageBuilder.content(
@@ -106,18 +108,21 @@ class ScamDetection {
       IGuild guild = message.guild!.getFromCache()!;
       String reason =
           "違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。";
+      IMember member = await guild.fetchMember(author.id);
 
-      if (ban) {
-        //  await guild.ban(author, deleteMessageDays: 1, auditReason: reason);
-        HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
+      /// Timeout member for 7 days
+      await member.edit(
+          builder: MemberBuilder()
+            ..timeoutUntil = DateTime.now().toUtc().add(Duration(days: 7)),
+          auditReason: reason);
 
-        await httpEndpoints.executeSafe(BasicRequest(
-            "/guilds/${guild.id}/bans/${author.id}",
-            method: "PUT",
-            body: {"delete-message-days": 1, "reason": reason}));
-      } else {
-        await guild.kick(author);
-      }
+      // HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
+
+      // await httpEndpoints.executeSafe(BasicRequest(
+      //     "/guilds/${guild.id}/bans/${author.id}",
+      //     method: "PUT",
+      //     body: {"delete-message-days": 1, "reason": reason}));
+
     }
     await logger.info("偵測到 <@${author.id}> 在 <#${message.channel.id}> 發送詐騙訊息");
   }
