@@ -30,6 +30,7 @@ class ScamDetection {
         /// 社群域名
         "discordresources.com",
         "discord.wiki",
+        "discordservers.tw",
 
         // Steam 官方域名
         "steampowered.com",
