@@ -3,4 +3,4 @@ services:
   rpmtw_discord_bot:
     build: .
     volumes:
-      - .:.env
+      - .env
