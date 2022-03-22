@@ -1,7 +1,7 @@
 import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
-import 'package:rpmtw_discord_bot/handlers/cosmic_handler.dart';
+//import 'package:rpmtw_discord_bot/handlers/cosmic_handler.dart';
 import 'package:rpmtw_discord_bot/interactions.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:logging/logging.dart' as logging;
