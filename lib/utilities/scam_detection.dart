@@ -1,7 +1,7 @@
 // ignore_for_file: implementation_imports
 import 'package:nyxx/nyxx.dart';
-// import 'package:nyxx/src/internal/http_endpoints.dart';
-// import 'package:nyxx/src/internal/http/http_request.dart';
+import 'package:nyxx/src/internal/http_endpoints.dart';
+import 'package:nyxx/src/internal/http/http_request.dart';
 import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
@@ -9,9 +9,11 @@ class ScamDetection {
   static final RegExp _urlRegex = RegExp(
       r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?');
 
-  static bool detection(String message) {
+  static void detection(String message,
+      {required Function(String message, String url) inBlackList,
+      required Function(String message, String url) unknownSuspiciousDomain}) {
     if (message.contains("https://") || message.contains("http://")) {
-      if (!_urlRegex.hasMatch(message)) return false;
+      if (!_urlRegex.hasMatch(message)) return;
 
       /// 訊息內容包含網址
 
@@ -62,17 +64,16 @@ class ScamDetection {
         bool isUnknownSuspiciousLink =
             keywords.any((e) => domain1.contains(e) || domain2.contains(e));
 
-        bool phishing =
-            !isWhitelisted && (isBlacklisted || isUnknownSuspiciousLink);
-
-        if (phishing) {
-          return true;
+        if (!isWhitelisted) {
+          if (isBlacklisted) {
+            inBlackList(message, matchString);
+            break;
+          } else if (isUnknownSuspiciousLink) {
+            unknownSuspiciousDomain(message, matchString);
+            break;
+          }
         }
       }
-
-      return false;
-    } else {
-      return false;
     }
   }
 
@@ -80,11 +81,11 @@ class ScamDetection {
       INyxxWebsocket client, IMessage message) async {
     if (message.author.bot) return;
     final String messageContent = message.content;
-    bool phishing = detection(messageContent);
-    if (phishing) {
-      /// 符合詐騙連結條件
-      _onPhishing(message, client);
-    }
+    detection(messageContent,
+        inBlackList: (_message, url) => _onPhishing(message, client, false),
+        unknownSuspiciousDomain: (_message, url) =>
+            _onPhishing(message, client, true));
+
     /*
     else if (phishingTerms.any((e) => messageContent.contains(e))) {
       /// 詐騙關鍵字
@@ -94,13 +95,11 @@ class ScamDetection {
   }
 
   static Future<void> _onPhishing(
-    IMessage message,
-    INyxxWebsocket client,
-  ) async {
+      IMessage message, INyxxWebsocket client, bool suspicious) async {
     final ReplyBuilder replyBuilder = ReplyBuilder.fromMessage(message);
     IMessageAuthor author = message.author;
     MessageBuilder messageBuilder = MessageBuilder.content(
-        "偵測到 <@${author.id}> 發送了詐騙訊息，因此已立即停權 <@${author.id}>，其他人請勿點選此詐騙訊息，如認為有誤判請聯繫 <@645588343228334080>。");
+        "偵測到 <@${author.id}> ${suspicious ? "疑似" : ""}發送了詐騙訊息，因此已立即${suspicious ? "禁言" : "停權"} <@${author.id}>，其他人請勿點選此詐騙訊息，如認為機器人有誤判請聯繫 <@645588343228334080>。");
     messageBuilder.replyBuilder = replyBuilder;
 
     await message.channel.sendMessage(messageBuilder);
@@ -109,22 +108,25 @@ class ScamDetection {
       IGuild guild = message.guild!.getFromCache()!;
       String reason =
           "違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。";
-      IMember member = await guild.fetchMember(author.id);
 
-      /// Timeout member for 7 days
-      await member.edit(
-          builder: MemberBuilder()
-            ..timeoutUntil = DateTime.now().toUtc().add(Duration(days: 7)),
-          auditReason: reason);
+      if (suspicious) {
+        IMember member = await guild.fetchMember(author.id);
 
-      // HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
+        /// Timeout member for 7 days
+        await member.edit(
+            builder: MemberBuilder()
+              ..timeoutUntil = DateTime.now().toUtc().add(Duration(days: 7)),
+            auditReason: reason);
+      } else {
+        HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
 
-      // await httpEndpoints.executeSafe(BasicRequest(
-      //     "/guilds/${guild.id}/bans/${author.id}",
-      //     method: "PUT",
-      //     body: {"delete-message-days": 1, "reason": reason}));
-
+        await httpEndpoints.executeSafe(BasicRequest(
+            "/guilds/${guild.id}/bans/${author.id}",
+            method: "PUT",
+            body: {"delete-message-days": 1, "reason": reason}));
+      }
     }
-    await logger.info("偵測到 <@${author.id}> 在 <#${message.channel.id}> 發送詐騙訊息");
+    await logger.info(
+        "偵測到 <@${author.id}> 在 <#${message.channel.id}> ${suspicious ? "疑似" : ""}發送詐騙訊息");
   }
 }
