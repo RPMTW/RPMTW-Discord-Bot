@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.RPMTW_SERVER_SSH_HOST }}
+          username: ${{ secrets.RPMTW_SERVER_SSH_USERNAME }}
+          key: ${{ secrets.RPMTW_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.RPMTW_SERVER_SSH_PASSPHRASE }}
+          script: |
+            cd ./RPMTW-Discord-Bot
+            git pull
+            docker-compose pull
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
