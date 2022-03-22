@@ -2,5 +2,3 @@ version: "3.9"
 services:
   rpmtw_discord_bot:
     build: .
-    volumes:
-      - .env
