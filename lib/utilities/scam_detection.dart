@@ -9,9 +9,10 @@ class ScamDetection {
   static final RegExp _urlRegex = RegExp(
       r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?');
 
-  static void detection(String message,
-      {required Function(String message, String url) inBlackList,
-      required Function(String message, String url) unknownSuspiciousDomain}) {
+  static Future<void> detection(String message,
+      {required Future<void> Function(String message, String url) inBlackList,
+      required Future<void> Function(String message, String url)
+          unknownSuspiciousDomain}) async {
     if (message.contains("https://") || message.contains("http://")) {
       if (!_urlRegex.hasMatch(message)) return;
 
@@ -66,10 +67,10 @@ class ScamDetection {
 
         if (!isWhitelisted) {
           if (isBlacklisted) {
-            inBlackList(message, matchString);
+            await inBlackList(message, matchString);
             break;
           } else if (isUnknownSuspiciousLink) {
-            unknownSuspiciousDomain(message, matchString);
+            await unknownSuspiciousDomain(message, matchString);
             break;
           }
         }
@@ -77,11 +78,11 @@ class ScamDetection {
     }
   }
 
-  static Future<void> detectionWithTimeOut(
+  static Future<void> detectionForDiscord(
       INyxxWebsocket client, IMessage message) async {
     if (message.author.bot) return;
     final String messageContent = message.content;
-    detection(messageContent,
+    await detection(messageContent,
         inBlackList: (_message, url) => _onPhishing(message, client, false),
         unknownSuspiciousDomain: (_message, url) =>
             _onPhishing(message, client, true));

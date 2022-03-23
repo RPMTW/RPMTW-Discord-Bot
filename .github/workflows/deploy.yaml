@@ -19,8 +19,14 @@ jobs:
           passphrase: ${{ secrets.RPMTW_SERVER_SSH_PASSPHRASE }}
           script: |
             cd ./RPMTW-Discord-Bot
-            git pull
+            sudo git pull
             sudo docker-compose pull
             sudo docker-compose down
             sudo docker-compose build
             sudo docker-compose up -d
+      - name: Dart Analyze
+        uses: invertase/github-action-dart-analyzer@v1
+        with:
+          fatal-warnings: false
+          annotate: true
+          annotate-only: false

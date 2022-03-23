@@ -17,7 +17,7 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
         //     .messageCache[updatedMessage.id];
 
         if (updatedMessage.content != "null") {
-          await ScamDetection.detectionWithTimeOut(client, updatedMessage);
+          await ScamDetection.detectionForDiscord(client, updatedMessage);
           await Changelog(client).edit(oldMessage, updatedMessage);
         }
       }
