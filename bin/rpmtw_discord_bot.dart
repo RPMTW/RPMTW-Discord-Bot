@@ -20,7 +20,7 @@ void main(List<String> arguments) async {
   );
 
   client.registerPlugin(Logging());
-  client.registerPlugin(CliIntegration());
+  // client.registerPlugin(CliIntegration());
   // client.registerPlugin(IgnoreExceptions());
   client.connect();
 

@@ -10,6 +10,22 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Cache Dart
+        uses: actions/cache@v2
+        with:
+          path: /opt/hostedtoolcache/dart-sdk
+          key: ${{ runner.os }}-dart-2.16.1
+      # https://dart.dev/get-dart/archive
+      - name: Install Dart SDK
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: 2.16.1
+      - name: Dart Analyze
+        uses: invertase/github-action-dart-analyzer@v1
+        with:
+          fatal-warnings: false
+          annotate: true
+          annotate-only: false
       - name: Build and setup on remote server
         uses: appleboy/ssh-action@master
         with:
@@ -24,9 +40,3 @@ jobs:
             sudo docker-compose down
             sudo docker-compose build
             sudo docker-compose up -d
-      - name: Dart Analyze
-        uses: invertase/github-action-dart-analyzer@v1
-        with:
-          fatal-warnings: false
-          annotate: true
-          annotate-only: false
