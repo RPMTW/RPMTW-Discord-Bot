@@ -15,12 +15,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /opt/hostedtoolcache/dart-sdk
-          key: ${{ runner.os }}-dart-2.16.1
+          key: ${{ runner.os }}-dart-2.16.2
       # https://dart.dev/get-dart/archive
       - name: Install Dart SDK
         uses: dart-lang/setup-dart@v1.3
         with:
-          sdk: 2.16.1
+          sdk: 2.16.2
       - name: Dart Analyze
         uses: invertase/github-action-dart-analyzer@v1
         with:
