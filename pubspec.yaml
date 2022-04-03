@@ -1,20 +1,20 @@
 name: rpmtw_discord_bot
 description: RPMTW Discord Server Bot
 version: 1.0.0
-# homepage: https://www.example.com
+homepage: https://www.rpmtw.com
 
 environment:
-  sdk: '>=2.16.0 <3.0.0'
+  sdk: ">=2.16.0 <3.0.0"
 
 dev_dependencies:
   lints: ^1.0.0
-dependencies: 
+dependencies:
   dotenv: ^3.0.0
-  nyxx: ^3.3.0
+  nyxx: ^3.3.1
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
   nyxx_interactions: ^4.0.0
-  nyxx_lavalink: ^3.0.0
-  nyxx_pagination: ^2.1.0
+  nyxx_lavalink: ^3.0.1
+  nyxx_pagination: ^2.2.0
   path: ^1.8.1
   rpmtw_api_client: ^1.0.7+3
