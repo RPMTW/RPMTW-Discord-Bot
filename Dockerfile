@@ -1,21 +1,22 @@
-# Use latest stable channel SDK.
-FROM dart:stable AS build
+# Use latest alpine image
+FROM alpine:latest
+ARG EXEC_DOWNLOAD_URL
 
-# Resolve app dependencies.
 WORKDIR /app
-COPY pubspec.* ./
-COPY .env ./
-RUN dart pub get
+# Install dependencies.
+RUN apk add --no-cache wget gzip tar
 
-# Copy app source code (except anything in .dockerignore) and AOT compile app.
-COPY . .
-RUN dart compile exe bin/rpmtw_discord_bot.dart -o bin/rpmtw_discord_bot
+# Cpoy the archive.
+COPY main.tar.gz .
+# Extract the executable archive.
+RUN wget -O main.tar.gz $EXEC_DOWNLOAD_URL
+RUN tar zxvf main.tar.gz
+# Give execute permission to the executable.
+RUN chmod +x bin/main
 
-# Build minimal serving image from AOT-compiled `/server`
-# and the pre-built AOT-runtime in the `/runtime/` directory of the base image.
+# Copy the executable.
 FROM scratch
-COPY --from=build /runtime/ /
-COPY --from=build /app/bin/rpmtw_discord_bot /app/bin/
+COPY --from=build /app/bin/main /app/bin/
 
-# Start discord bot.
-CMD ["/app/bin/rpmtw_discord_bot"]
+# Start the program.
+CMD ["/app/bin/main"]
