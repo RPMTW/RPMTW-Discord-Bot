@@ -221,25 +221,26 @@ class Interactions {
   }
 
   static SlashCommandBuilder get chefRank {
-    SlashCommandBuilder _cmd = SlashCommandBuilder("chef-rank", "看看誰最電！ (前 20 名)", [],
+    SlashCommandBuilder _cmd = SlashCommandBuilder(
+        "chef-rank", "看看誰最電！ (前 20 名)", [],
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
         final Box box = Data.chefBox;
         EmbedBuilder embed = EmbedBuilder();
         embed.title = "電神排名";
-        embed.description = "看看誰最電！";
+        embed.description = "看看誰最電！ (前 20 名)";
 
         Map<String, int> chefInfos = {};
-        List<String> keys = box.keys.cast<String>().take(20).toList();
-        for (final key in keys) {
+        for (final key in box.keys) {
           chefInfos[key] = box.get(key);
         }
         List<MapEntry<String, int>> sortted = chefInfos.entries
             .toList()
             .map((e) => MapEntry(e.key, e.value))
             .toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+          ..sort((a, b) => b.value.compareTo(a.value))
+          ..take(20);
 
         for (final MapEntry<String, int> entry in sortted) {
           embed.addField(
