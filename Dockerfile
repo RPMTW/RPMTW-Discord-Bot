@@ -6,11 +6,10 @@ WORKDIR /app
 # Install dependencies.
 RUN apk add --no-cache wget gzip tar
 
-# Cpoy the archive.
-COPY main.tar.gz .
 # Extract the executable archive.
 RUN wget -O main.tar.gz $EXEC_DOWNLOAD_URL
 RUN tar zxvf main.tar.gz
+
 # Give execute permission to the executable.
 RUN chmod +x bin/main
 
