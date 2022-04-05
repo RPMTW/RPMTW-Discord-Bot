@@ -24,7 +24,6 @@ jobs:
           sdk: 2.16.2
       - name: Build
         run: |
-          dart pub cache clean --force
           dart pub get
           dart compile exe bin/main.dart -o bin/main
       - name: Upload file to file.io
