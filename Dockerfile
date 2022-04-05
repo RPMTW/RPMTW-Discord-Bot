@@ -1,5 +1,5 @@
 # Use latest alpine image
-FROM alpine:latest
+FROM alpine:latest AS alpine
 ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
@@ -15,7 +15,7 @@ RUN chmod +x bin/main
 
 # Copy the executable.
 FROM scratch
-COPY --from=build /app/bin/main /app/bin/
+COPY --from=alpine /app/bin/main /app/bin/
 
 # Start the program.
 CMD ["/app/bin/main"]
