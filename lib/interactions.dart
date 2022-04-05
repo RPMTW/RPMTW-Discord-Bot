@@ -185,10 +185,23 @@ class Interactions {
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
+        final IUser? user = event.interaction.userAuthor;
+        if (user == null) return;
         await event.acknowledge();
-        Box box = Data.chefBox;
-        String userID = event.getArg("user").value;
-        String message = event.interaction.getArg("message") ?? "好電！";
+        if (user.bot == true) {
+          await event.respond(MessageBuilder.content("您不能廚機器人。"));
+          return;
+        }
+
+        final Box box = Data.chefBox;
+        final String userID = event.getArg("user").value;
+
+        if (userID == user.id.toString()) {
+          await event.respond(MessageBuilder.content("太電啦！您不能廚自己。"));
+          return;
+        }
+
+        final String message = event.interaction.getArg("message") ?? "好電！";
         int count;
         if (box.containsKey(userID)) {
           int _count = box.get(userID);
@@ -199,7 +212,43 @@ class Interactions {
         await box.put(userID, count);
 
         await event.respond(
-            MessageBuilder.content("<@$userID> $message\n被廚了 $count 次"));
+            MessageBuilder.content("<@!$userID> $message\n被廚了 $count 次"));
+      } catch (e) {
+        print(e);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get chefRank {
+    SlashCommandBuilder _cmd = SlashCommandBuilder("chef-rank", "看看誰最電！ (前 20 名)", [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        final Box box = Data.chefBox;
+        EmbedBuilder embed = EmbedBuilder();
+        embed.title = "電神排名";
+        embed.description = "看看誰最電！";
+
+        Map<String, int> chefInfos = {};
+        List<String> keys = box.keys.cast<String>().take(20).toList();
+        for (final key in keys) {
+          chefInfos[key] = box.get(key);
+        }
+        List<MapEntry<String, int>> sortted = chefInfos.entries
+            .toList()
+            .map((e) => MapEntry(e.key, e.value))
+            .toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        for (final MapEntry<String, int> entry in sortted) {
+          embed.addField(
+              name: "<@!${entry.key}>", content: "被廚了 ${entry.value} 次");
+        }
+
+        embed.timestamp = DateTime.now();
+
+        return await event.respond(MessageBuilder.embed(embed));
       } catch (e) {
         print(e);
       }
@@ -216,6 +265,7 @@ class Interactions {
     interactions.registerSlashCommand(viewMod);
     interactions.registerSlashCommand(info);
     interactions.registerSlashCommand(chef);
+    interactions.registerSlashCommand(chefRank);
 
     interactions.syncOnReady();
   }
