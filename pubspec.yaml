@@ -6,10 +6,9 @@ homepage: https://www.rpmtw.com
 environment:
   sdk: ">=2.16.0 <3.0.0"
 
-dev_dependencies:
-  lints: ^1.0.0
 dependencies:
   dotenv: ^3.0.0
+  hive: ^2.1.0
   nyxx: ^3.3.1
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
@@ -18,3 +17,8 @@ dependencies:
   nyxx_pagination: ^2.2.0
   path: ^1.8.1
   rpmtw_api_client: ^1.0.7+3
+
+dev_dependencies:
+  build_runner: ^2.1.8
+  hive_generator: ^1.1.2
+  lints: ^1.0.0

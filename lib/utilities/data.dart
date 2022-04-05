@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dotenv/dotenv.dart';
+import 'package:hive/hive.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
 import 'package:rpmtw_discord_bot/utilities/log.dart';
@@ -14,9 +17,16 @@ Logger get logger => _logger;
 late bool kDebugMode;
 
 class Data {
-  static void init() {
+  static late final Box _chefBox;
+
+  static Box get chefBox => _chefBox;
+
+  static Future<void> init() async {
     load();
     RPMTWApiClient.init();
+    String path = Directory.current.path;
+    Hive.init(path);
+    _chefBox = await Hive.openBox('chefBox');
 
     kDebugMode = env['DEBUG_MODE']?.toBool() ?? false;
   }

@@ -24,6 +24,7 @@ jobs:
           sdk: 2.16.2
       - name: Build
         run: |
+          dart pub cache clean --force
           dart pub get
           dart compile exe bin/main.dart -o bin/main
       - name: Upload file to file.io
@@ -33,7 +34,7 @@ jobs:
           file_path: bin/main
           file_basename: main
 
-      - name: Build and setup on remote server
+      - name: Setup on remote server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.RPMTW_SERVER_SSH_HOST }}

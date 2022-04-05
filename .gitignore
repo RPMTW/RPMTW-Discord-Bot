@@ -1,3 +1,5 @@
 .env
 .packages
-.dart_tool/package_config.json
+.dart_tool/
+chefbox.lock
+chefbox.hive

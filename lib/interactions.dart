@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:hive/hive.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
@@ -33,13 +34,8 @@ class Interactions {
     _cmd.registerHandler((event) async {
       try {
         await event.acknowledge();
-        String? filter;
-        try {
-          filter = event.getArg("filter").value;
-          if (filter == "" || filter == "null") filter = null;
-        } catch (e) {
-          filter = null;
-        }
+        String? filter = event.interaction.getArg("filter");
+
         RPMTWApiClient apiClient = RPMTWApiClient.instance;
         List<MinecraftMod> mods =
             await apiClient.minecraftResource.search(filter: filter);
@@ -175,6 +171,42 @@ class Interactions {
     return _cmd;
   }
 
+  static SlashCommandBuilder get chef {
+    SlashCommandBuilder _cmd = SlashCommandBuilder(
+        "chef",
+        "廚別人，好電！",
+        [
+          CommandOptionBuilder(CommandOptionType.user, "user", "想要廚的人",
+              required: true),
+          CommandOptionBuilder(
+              CommandOptionType.string, "message", "要向被廚的人發送的訊息內容 (預設為：好電！)",
+              required: false)
+        ],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+        Box box = Data.chefBox;
+        String userID = event.getArg("user").value;
+        String message = event.interaction.getArg("message") ?? "好電！";
+        int count;
+        if (box.containsKey(userID)) {
+          int _count = box.get(userID);
+          count = _count + 1;
+        } else {
+          count = 1;
+        }
+        await box.put(userID, count);
+
+        await event.respond(
+            MessageBuilder.content("<@$userID> $message\n被廚了 $count 次"));
+      } catch (e) {
+        print(e);
+      }
+    });
+    return _cmd;
+  }
+
   static void register(INyxxWebsocket client) {
     IInteractions interactions =
         IInteractions.create(WebsocketInteractionBackend(client));
@@ -183,6 +215,7 @@ class Interactions {
     interactions.registerSlashCommand(searchMods);
     interactions.registerSlashCommand(viewMod);
     interactions.registerSlashCommand(info);
+    interactions.registerSlashCommand(chef);
 
     interactions.syncOnReady();
   }

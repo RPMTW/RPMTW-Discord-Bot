@@ -8,7 +8,7 @@
             "name": "PRMTW-Discord-Bot",
             "request": "launch",
             "type": "dart",
-            "program": "bin/rpmtw_discord_bot.dart",
+            "program": "bin/main.dart",
         }
     ]
 }
