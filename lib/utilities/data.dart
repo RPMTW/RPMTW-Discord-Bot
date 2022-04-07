@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotenv/dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
 import 'package:rpmtw_discord_bot/utilities/log.dart';
 import 'package:rpmtw_discord_bot/utilities/extension.dart';
@@ -24,7 +25,7 @@ class Data {
   static Future<void> init() async {
     load();
     RPMTWApiClient.init();
-    String path = Directory.current.path;
+    String path = absolute(Directory.current.path, "data");
     Hive.init(path);
     _chefBox = await Hive.openBox('chefBox');
 

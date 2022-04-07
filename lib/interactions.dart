@@ -188,13 +188,14 @@ class Interactions {
         final IUser? user = event.interaction.userAuthor;
         if (user == null) return;
         await event.acknowledge();
-        if (user.bot == true) {
-          await event.respond(MessageBuilder.content("您不能廚機器人。"));
-          return;
-        }
 
         final Box box = Data.chefBox;
         final String userID = event.getArg("user").value;
+
+        if (event.client.users[userID]?.bot == true) {
+          await event.respond(MessageBuilder.content("您不能廚機器人。"));
+          return;
+        }
 
         if (userID == user.id.toString()) {
           await event.respond(MessageBuilder.content("太電啦！您不能廚自己。"));
@@ -229,22 +230,25 @@ class Interactions {
         final Box box = Data.chefBox;
         EmbedBuilder embed = EmbedBuilder();
         embed.title = "電神排名";
-        embed.description = "看看誰最電！ (前 20 名)";
+        embed.description = "看看誰最電！ (前 10 名)";
 
         Map<String, int> chefInfos = {};
         for (final key in box.keys) {
           chefInfos[key] = box.get(key);
         }
-        List<MapEntry<String, int>> sortted = chefInfos.entries
+        List<MapEntry<String, int>> sorted = chefInfos.entries
             .toList()
             .map((e) => MapEntry(e.key, e.value))
             .toList()
           ..sort((a, b) => b.value.compareTo(a.value))
-          ..take(20);
+          ..take(10);
 
-        for (final MapEntry<String, int> entry in sortted) {
+        for (final MapEntry<String, int> entry in sorted) {
+          int index = sorted.indexOf(entry) + 1;
+
           embed.addField(
-              name: "<@!${entry.key}>", content: "被廚了 ${entry.value} 次");
+              name: "第 $index 名",
+              content: "<@!${entry.key}> 被廚了 ${entry.value} 次");
         }
 
         embed.timestamp = DateTime.now();
