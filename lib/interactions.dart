@@ -185,19 +185,21 @@ class Interactions {
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
-        final IUser? user = event.interaction.userAuthor;
-        if (user == null) return;
+        final IUser? author = event.interaction.userAuthor;
+        if (author == null) return;
         await event.acknowledge();
 
+        final INyxxWebsocket client = event.client as INyxxWebsocket;
         final Box box = Data.chefBox;
         final String userID = event.getArg("user").value;
+        final IUser user = await client.fetchUser(userID.toSnowflake());
 
-        if (event.client.users[userID]?.bot == true) {
+        if (user.bot) {
           await event.respond(MessageBuilder.content("您不能廚機器人。"));
           return;
         }
 
-        if (userID == user.id.toString()) {
+        if (user.id == author.id) {
           await event.respond(MessageBuilder.content("太電啦！您不能廚自己。"));
           return;
         }
