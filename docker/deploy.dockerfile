@@ -14,6 +14,8 @@ RUN tar zxvf main.tar.gz
 # Give execute permission to the executable.
 RUN chmod +x bin/main
 
+# https://github.com/gliderlabs/docker-alpine/issues/367#issuecomment-424546457
+RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
 # https://github.com/dart-lang/dart-docker/blob/e1ef8a01789e6e0b3dad6b471934199c2587a6ef/stable/bullseye/Dockerfile#L15
 # Create a minimal runtime environment for executing AOT-compiled Dart code
 # with the smallest possible image size.
