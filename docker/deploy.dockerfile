@@ -4,15 +4,19 @@ ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
 # Install dependencies.
-RUN apk add --no-cache --update wget gzip tar ca-certificates curl bind-tools openssh-client libc6-compat
+RUN apk add --no-cache --update wget gzip tar ca-certificates curl bind-tools openssh-client
 
-# Extract the executable archive.
-COPY . .
-RUN wget -O main.tar.gz $EXEC_DOWNLOAD_URL
-RUN tar zxvf main.tar.gz
+# Source: https://github.com/anapsix/docker-alpine-java
 
-# Give execute permission to the executable.
-RUN chmod +x bin/main
+ENV GLIBC_REPO=https://github.com/sgerrand/alpine-pkg-glibc
+ENV GLIBC_VERSION=2.35-r0
+RUN set -ex && \
+    apk --update add libstdc++ curl ca-certificates && \
+    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION}; \
+        do curl -sSL ${GLIBC_REPO}/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
+    apk add --allow-untrusted /tmp/*.apk && \
+    rm -v /tmp/*.apk && \
+    /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
 
 # https://github.com/gliderlabs/docker-alpine/issues/367#issuecomment-424546457
 RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
@@ -54,6 +58,14 @@ RUN set -eux; \
         mkdir -p "/runtime$dir"; \
         cp --archive --link --dereference --no-target-directory "$f" "/runtime$f"; \
     done
+
+# Extract the executable archive.
+COPY . .
+RUN wget -O main.tar.gz $EXEC_DOWNLOAD_URL
+RUN tar zxvf main.tar.gz
+
+# Give execute permission to the executable.
+RUN chmod +x bin/main
 
 # Copy the executable.
 FROM scratch
