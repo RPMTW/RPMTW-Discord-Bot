@@ -12,7 +12,7 @@ import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Covid19Handler {
   static const String _url =
-      'https://covid-19.nchc.org.tw/dt_005-covidTable_taiwan.php';
+      'https://news.campaign.yahoo.com.tw/2019-nCoV/taiwancase.php';
 
   static Future<Covid19Info> fetch() async {
     http.Response response = await http.get(Uri.parse(_url));
@@ -29,47 +29,36 @@ class Covid19Handler {
     }
 
     int _parseField(int index, bool isTitle) {
-      Element _element = document.getElementsByClassName(
-          'col-lg-3 col-sm-6 col-6 text-center my-5')[index];
+      Element _element =
+          document.getElementsByTagName('dl').first.children[index];
 
       Element element;
 
       if (isTitle) {
-        element = _element.getElementsByTagName('h1').first;
+        element = _element.getElementsByClassName("num").first;
       } else {
-        element = _element
-            .getElementsByClassName('text-muted')
-            .first
-            .getElementsByTagName('span')
-            .first;
+        element = _element.getElementsByTagName('p').first;
       }
 
-      return _parseInt(element.text.replaceFirst('本土病例 ', ''));
+      return _parseInt(element.text);
     }
 
-    int confirmed = _parseInt(document
-        .getElementsByClassName('country_recovered mb-1 text-info')
-        .first
-        .text);
+    int confirmed = _parseField(1, true);
 
-    int localConfirmed = _parseField(1, false);
+    int localConfirmed = _parseField(2, true);
 
-    int nonLocalConfirmed = confirmed - localConfirmed;
+    int nonLocalConfirmed = _parseField(3, true);
 
-    int death = _parseField(2, false);
+    int death = _parseField(4, true);
 
     int totalConfirmed = _parseField(0, true);
-    int totalLocalConfirmed = _parseField(0, false);
-    int totalNonLocalConfirmed = totalConfirmed - totalLocalConfirmed;
+    int totalLocalConfirmed = _parseField(2, false);
+    int totalNonLocalConfirmed = _parseField(3, false);
 
-    int totalDeath = _parseField(2, true);
+    int totalDeath = _parseField(4, false);
 
-    String lastUpdatedString = document
-        .getElementsByClassName('col-lg-12 main')
-        .first
-        .getElementsByTagName("span")[1]
-        .text
-        .trim();
+    String lastUpdatedString =
+        document.getElementsByClassName("sub").first.text.trim();
 
     return Covid19Info(
         confirmed: confirmed,

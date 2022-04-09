@@ -50,7 +50,7 @@ class Covid19Info extends HiveObject {
     if (_index == -1 || _index == 0) {
       yesterdayTime = null;
     } else {
-      yesterdayTime = box.keys.elementAt(_index - 1);
+      yesterdayTime = int.parse(box.keys.elementAt(_index - 1));
     }
 
     if (yesterdayTime == null) {
@@ -101,7 +101,7 @@ class Covid19Info extends HiveObject {
 
     embed.addField(name: "疫情趨勢", content: outbreak ? '升溫' : '緩和');
     embed.timestamp = Util.getUTCTime();
-    embed.footer = EmbedFooterBuilder()..text = "資料來源：衛生福利部疾病管制署/國家高速網路與計算中心";
+    embed.footer = EmbedFooterBuilder()..text = "資料來源：衛生福利部疾病管制署/Yahoo 奇摩新聞";
 
     return embed;
   }
@@ -114,31 +114,31 @@ class Covid19Info extends HiveObject {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is Covid19Info &&
-      other.confirmed == confirmed &&
-      other.localConfirmed == localConfirmed &&
-      other.nonLocalConfirmed == nonLocalConfirmed &&
-      other.death == death &&
-      other.totalConfirmed == totalConfirmed &&
-      other.totalLocalConfirmed == totalLocalConfirmed &&
-      other.totalNonLocalConfirmed == totalNonLocalConfirmed &&
-      other.totalDeath == totalDeath &&
-      other.lastUpdated == lastUpdated &&
-      other.lastUpdatedString == lastUpdatedString;
+        other.confirmed == confirmed &&
+        other.localConfirmed == localConfirmed &&
+        other.nonLocalConfirmed == nonLocalConfirmed &&
+        other.death == death &&
+        other.totalConfirmed == totalConfirmed &&
+        other.totalLocalConfirmed == totalLocalConfirmed &&
+        other.totalNonLocalConfirmed == totalNonLocalConfirmed &&
+        other.totalDeath == totalDeath &&
+        other.lastUpdated == lastUpdated &&
+        other.lastUpdatedString == lastUpdatedString;
   }
 
   @override
   int get hashCode {
     return confirmed.hashCode ^
-      localConfirmed.hashCode ^
-      nonLocalConfirmed.hashCode ^
-      death.hashCode ^
-      totalConfirmed.hashCode ^
-      totalLocalConfirmed.hashCode ^
-      totalNonLocalConfirmed.hashCode ^
-      totalDeath.hashCode ^
-      lastUpdated.hashCode ^
-      lastUpdatedString.hashCode;
+        localConfirmed.hashCode ^
+        nonLocalConfirmed.hashCode ^
+        death.hashCode ^
+        totalConfirmed.hashCode ^
+        totalLocalConfirmed.hashCode ^
+        totalNonLocalConfirmed.hashCode ^
+        totalDeath.hashCode ^
+        lastUpdated.hashCode ^
+        lastUpdatedString.hashCode;
   }
 }
