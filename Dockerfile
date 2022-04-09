@@ -17,6 +17,7 @@ RUN chmod +x bin/main
 # Copy the executable.
 FROM scratch
 COPY --from=build / /
+COPY --from=build /app/bin/main /app/bin/
 
 # Start the program.
 CMD ["/app/bin/main"]
