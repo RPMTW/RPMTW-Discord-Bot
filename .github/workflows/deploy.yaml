@@ -34,12 +34,13 @@ jobs:
           file_basename: main
 
       - name: Setup on remote server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@c732d38392bd59adadcb5e688fb1f7f1d29c6951
         with:
           host: ${{ secrets.RPMTW_SERVER_SSH_HOST }}
           username: ${{ secrets.RPMTW_SERVER_SSH_USERNAME }}
           key: ${{ secrets.RPMTW_SERVER_SSH_KEY }}
           passphrase: ${{ secrets.RPMTW_SERVER_SSH_PASSPHRASE }}
+          script_stop: true
           script: |
             cd ./RPMTW-Discord-Bot
             sudo git restore .
