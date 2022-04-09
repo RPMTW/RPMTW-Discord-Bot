@@ -117,7 +117,7 @@ class Covid19Handler {
             ITextChannel channel =
                 await dcClient.fetchChannel<ITextChannel>(chatChannelID);
             channel.sendMessage(MessageBuilder()
-              ..content = '指揮中心發布了最新的疫情資訊囉！'
+              ..content = '中央流行疫情指揮中心剛才發布了最新的疫情資訊囉！'
               ..embeds = [status.info.generateEmbed()]);
 
             timer.cancel();

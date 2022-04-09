@@ -74,21 +74,38 @@ class Covid19Info extends HiveObject {
   });
 
   EmbedBuilder generateEmbed() {
-    DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
+    final DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
+    final Covid19Info? _yesterday = yesterday;
 
-    bool outbreak = confirmed > (yesterday?.confirmed ?? 0);
-    DateFormat dateFormat = DateFormat.yMMMMEEEEd("zh-TW").add_jms();
+    final bool outbreak = confirmed > (_yesterday?.confirmed ?? 0);
+    final bool localOutbreak =
+        localConfirmed > (_yesterday?.localConfirmed ?? 0);
+    final bool nonLocalOutbreak =
+        nonLocalConfirmed > (_yesterday?.nonLocalConfirmed ?? 0);
+    final bool deathOutbreak = death > (_yesterday?.death ?? 0);
+
+    final DateFormat dateFormat = DateFormat.yMMMMEEEEd("zh-TW").add_jms();
+    final String upArrow = '⬆';
+    final String downArrow = '⬇';
 
     EmbedBuilder embed = EmbedBuilder();
     embed.title = 'Covid-19 疫情資訊 (台灣)';
     embed.description = '更新時間： ${dateFormat.format(time)}';
     embed.color = outbreak ? DiscordColor.red : DiscordColor.green;
 
-    embed.addField(name: "新增病例", content: confirmed.toString());
-    embed.addField(name: "本土確診", content: localConfirmed.toString());
-    embed.addField(name: "境外移入", content: nonLocalConfirmed.toString());
+    embed.addField(
+        name: "新增病例",
+        content: '${outbreak ? upArrow : downArrow} $confirmed',
+        inline: true);
+    embed.addField(
+        name: "本土確診",
+        content: '${localOutbreak ? upArrow : downArrow} $localConfirmed',
+        inline: true);
+    embed.addField(
+        name: "境外移入",
+        content: '${nonLocalOutbreak ? upArrow : downArrow} $nonLocalConfirmed',
+        inline: true);
 
-    embed.addField(name: "死亡", content: death.toString(), inline: true);
     embed.addField(
         name: "累計確診", content: totalConfirmed.toString(), inline: true);
     embed.addField(
@@ -96,6 +113,11 @@ class Covid19Info extends HiveObject {
     embed.addField(
         name: "累計境外移入",
         content: totalNonLocalConfirmed.toString(),
+        inline: true);
+
+    embed.addField(
+        name: "死亡",
+        content: '${deathOutbreak ? upArrow : downArrow} $death',
         inline: true);
     embed.addField(name: "累計死亡", content: totalDeath.toString(), inline: true);
 

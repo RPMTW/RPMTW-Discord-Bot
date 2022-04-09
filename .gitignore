@@ -1,5 +1,4 @@
 .env
 .packages
 .dart_tool/
-chefbox.lock
-chefbox.hive
+data/
