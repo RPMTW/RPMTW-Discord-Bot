@@ -28,9 +28,9 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
       // check if the member already has the role
       bool added = member.roles.any((r) => r.id == nsfwRoleID.id);
       if (!added) {
-        // add "約瑟教" role
+        // add '約瑟教' role
         await member.addRole(nsfwRoleID);
-        String prefix = "約瑟．";
+        String prefix = '約瑟．';
         String name = member.nickname ?? author.username;
         if (!name.contains(prefix)) {
           await member.edit(builder: MemberBuilder()..nick = prefix + name);

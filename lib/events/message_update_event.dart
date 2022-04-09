@@ -10,13 +10,13 @@ class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {
     try {
       IMessage? updatedMessage = event.updatedMessage;
       IMessage? oldMessage = event.oldMessage;
-      
+
       if (updatedMessage != null && oldMessage != null) {
         // IMessage? oldMessage = updatedMessage.channel
         //     .getFromCache()!
         //     .messageCache[updatedMessage.id];
 
-        if (updatedMessage.content != "null") {
+        if (updatedMessage.content != 'null') {
           await ScamDetection.detectionForDiscord(client, updatedMessage);
           await Changelog(client).edit(oldMessage, updatedMessage);
         }

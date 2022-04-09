@@ -54,7 +54,7 @@ class CosmicChatHandler {
             avatarUrl: msg.avatarUrl, username: authorName);
       } catch (e, stack) {
         await logger.error(
-            error: "Send cosmic chat message to discord failed: $e",
+            error: 'Send cosmic chat message to discord failed: $e',
             stackTrace: stack);
       }
     });
@@ -62,7 +62,7 @@ class CosmicChatHandler {
 
   static String formatNickname(CosmicChatMessage msg) {
     return msg.nickname != null
-        ? "${msg.username} (${msg.nickname})"
+        ? '${msg.username} (${msg.nickname})'
         : msg.username;
   }
 }

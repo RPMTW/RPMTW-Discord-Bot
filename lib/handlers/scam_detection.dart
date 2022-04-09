@@ -4,6 +4,7 @@ import 'package:nyxx/src/internal/http_endpoints.dart';
 import 'package:nyxx/src/internal/http/http_request.dart';
 import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 final String _pattern =
     r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
@@ -131,7 +132,7 @@ class ScamDetection {
         /// Timeout member for 7 days
         await member.edit(
             builder: MemberBuilder()
-              ..timeoutUntil = DateTime.now().toUtc().add(Duration(days: 7)),
+              ..timeoutUntil = Util.getUTCTime().add(Duration(days: 7)),
             auditReason: reason);
       } else {
         HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;

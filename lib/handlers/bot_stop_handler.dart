@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 class BotStopHandler extends BasePlugin {
   @override
   FutureOr<void> onBotStop(INyxx nyxx, Logger logger) async {
-    logger.info("Closing database...");
+    logger.info('Closing database...');
     await Hive.close();
   }
 }

@@ -8,7 +8,7 @@ class ReadyEvent implements BaseEvent<IReadyEvent> {
   @override
   Future<void> handler(client, event) async {
     // client.shardManager.rawEvent.listen((_event) {
-    //   print("Raw event: ${_event.rawData}");
+    //   print('Raw event: ${_event.rawData}');
     // });
 
     await Data.initOnReady(client);

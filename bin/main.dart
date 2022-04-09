@@ -2,6 +2,7 @@ import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
 import 'package:rpmtw_discord_bot/handlers/bot_stop_handler.dart';
+import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
 //import 'package:rpmtw_discord_bot/handlers/cosmic_handler.dart';
 import 'package:rpmtw_discord_bot/interactions.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
@@ -15,9 +16,7 @@ void main(List<String> arguments) async {
   INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
     env['DISCORD_TOKEN']!,
     GatewayIntents.all,
-    options: ClientOptions(
-        // dispatchRawShardEvent: true
-        ),
+    options: ClientOptions(),
   );
 
   client.registerPlugin(Logging());
@@ -31,6 +30,7 @@ void main(List<String> arguments) async {
 
   /// Register all events
   Events.register(client);
+  Covid19Handler.timer();
 
   // CosmicChatHandler.init(client);
 }

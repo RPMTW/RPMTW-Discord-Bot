@@ -26,7 +26,7 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
           await guildChannel.delete();
         } else if (channel != null && channel.id == voiceChannelID) {
           final ChannelBuilder newVoiceChannel = _VoiceChannelBuilder.create(
-              "${user.username} 的頻道",
+              '${user.username} 的頻道',
               permissionOverwrites: PermissionOverrideBuilder(1, user.id)
                 ..manageRoles = true,
               parent: categoryID);
@@ -38,7 +38,7 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
           await member.edit(
               builder: MemberBuilder()..channel = guildChannel.id);
 
-          logger.info("成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)");
+          logger.info('成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)');
           _createdChannel[user.id] = guildChannel;
         }
       }
@@ -69,15 +69,15 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
   @override
   RawApiMap build() => {
         ...super.build(),
-        "name": name,
+        'name': name,
         if (permissionOverwrites != null)
-          "permission_overwrites": [
+          'permission_overwrites': [
             permissionOverwrites!.build(),
           ],
-        if (parent != null) "parent_id": parent!.id.toString(),
-        if (bitrate != null) "bitrate": bitrate,
-        if (userLimit != null) "user_limit": userLimit,
-        if (rateLimitPerUser != null) "rate_limit_per_user": rateLimitPerUser,
-        if (rtcRegion != "") "rtc_region": rtcRegion,
+        if (parent != null) 'parent_id': parent!.id.toString(),
+        if (bitrate != null) 'bitrate': bitrate,
+        if (userLimit != null) 'user_limit': userLimit,
+        if (rateLimitPerUser != null) 'rate_limit_per_user': rateLimitPerUser,
+        if (rtcRegion != '') 'rtc_region': rtcRegion,
       };
 }

@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
+import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/utilities/log.dart';
 import 'package:rpmtw_discord_bot/utilities/extension.dart';
 
@@ -19,15 +21,20 @@ late bool kDebugMode;
 
 class Data {
   static late final Box _chefBox;
+  static late final Box _covid19Box;
 
   static Box get chefBox => _chefBox;
+  static Box get covid19Box => _covid19Box;
 
   static Future<void> init() async {
     load();
     RPMTWApiClient.init();
-    String path = absolute(Directory.current.path, "data");
+    String path = absolute(Directory.current.path, 'data');
     Hive.init(path);
+    Hive.registerAdapter(Covid19InfoAdapter());
     _chefBox = await Hive.openBox('chefBox');
+    _covid19Box = await Hive.openBox('covid19Box');
+    await initializeDateFormatting("zh-TW");
 
     kDebugMode = env['DEBUG_MODE']?.toBool() ?? false;
   }

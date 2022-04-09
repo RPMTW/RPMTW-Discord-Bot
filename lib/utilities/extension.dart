@@ -7,14 +7,14 @@ extension StringCasingExtension on String {
   /// 將字串每個開頭字母轉成大寫
   /// hello world -> Hello World
   String toTitleCase() => replaceAll(RegExp(' +'), ' ')
-      .split(" ")
+      .split(' ')
       .map((str) => str.toCapitalized())
-      .join(" ");
+      .join(' ');
 
   bool get isEnglish {
     RegExp regExp = RegExp(r'\w+\s*$');
     return regExp.hasMatch(this);
   }
 
-  bool toBool() => this == "true";
+  bool toBool() => this == 'true';
 }
