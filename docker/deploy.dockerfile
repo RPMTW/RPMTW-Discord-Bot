@@ -4,8 +4,20 @@ ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
 # Install dependencies.
-RUN apt-get update
-RUN apt-get install -y wget gzip tar ca-certificates curl dnsutils git openssh-client
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        dnsutils \
+        git \
+        openssh-client \
+        unzip \
+        wget \
+        gzip \
+        tar \
+    ; \
+    rm -rf /var/lib/apt/lists/*
 
 # https://github.com/dart-lang/dart-docker/blob/e1ef8a01789e6e0b3dad6b471934199c2587a6ef/stable/bullseye/Dockerfile#L15
 # Create a minimal runtime environment for executing AOT-compiled Dart code
