@@ -21,14 +21,14 @@ RUN chmod +x bin/main
 # uses hard links here to save space
 RUN set -eux; \
     case "$(apk --print-arch)" in \
-        x86) \
+        x86_64) \
             TRIPLET="x86_64-linux-gnu" ; \
             FILES="/lib64/ld-linux-x86-64.so.2" ;; \
         armhf) \
             TRIPLET="arm-linux-gnueabihf" ; \
             FILES="/lib/ld-linux-armhf.so.3 \
                 /lib/arm-linux-gnueabihf/ld-linux-armhf.so.3";; \
-        x86) \
+        aarch64) \
             TRIPLET="aarch64-linux-gnu" ; \
             FILES="/lib/ld-linux-aarch64.so.1 \
                 /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1" ;; \
