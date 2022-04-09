@@ -19,7 +19,7 @@ class Interactions {
         String userTag = event.interaction.userAuthor!.tag;
         await event.respond(MessageBuilder.content('嗨，$userTag ！'));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;
@@ -59,7 +59,7 @@ class Interactions {
 
         await event.respond(MessageBuilder.embed(embed));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
 
@@ -118,9 +118,9 @@ class Interactions {
 
         await event.respond(componentMessageBuilder);
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
         await event.respond(
             MessageBuilder.content('找不到此模組或發生未知錯誤，請確認您輸入的 UUID 是否正確。'));
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;
@@ -168,7 +168,7 @@ class Interactions {
 
         await event.respond(MessageBuilder.embed(embed));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;
@@ -220,7 +220,7 @@ class Interactions {
         await event.respond(
             MessageBuilder.content('<@!$userID> $message\n被廚了 $count 次'));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;
@@ -260,7 +260,7 @@ class Interactions {
 
         return await event.respond(MessageBuilder.embed(embed));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;
@@ -268,7 +268,7 @@ class Interactions {
 
   static SlashCommandBuilder get covid_19 {
     SlashCommandBuilder _cmd = SlashCommandBuilder(
-        'covid19', '查看今日台灣新冠肺炎確診資訊', [],
+        'covid19', '查看今日台灣新冠肺炎疫情資訊', [],
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
@@ -277,7 +277,9 @@ class Interactions {
 
         return await event.respond(MessageBuilder.embed(info.generateEmbed()));
       } catch (e, stackTrace) {
-        logger.error(error: e, stackTrace: stackTrace);
+        await event.respond(MessageBuilder.content(
+            '取得 Covid-19 疫情資訊失敗，請稍後再試，如仍然失敗請聯繫 <@!$siongsngUserID>。'));
+        await logger.error(error: e, stackTrace: stackTrace);
       }
     });
     return _cmd;

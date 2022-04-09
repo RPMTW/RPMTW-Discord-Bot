@@ -26,13 +26,14 @@ class Covid19InfoAdapter extends TypeAdapter<Covid19Info> {
       totalNonLocalConfirmed: fields[6] as int,
       totalDeath: fields[7] as int,
       lastUpdated: fields[8] as DateTime,
+      lastUpdatedString: fields[9] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Covid19Info obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.confirmed)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class Covid19InfoAdapter extends TypeAdapter<Covid19Info> {
       ..writeByte(7)
       ..write(obj.totalDeath)
       ..writeByte(8)
-      ..write(obj.lastUpdated);
+      ..write(obj.lastUpdated)
+      ..writeByte(9)
+      ..write(obj.lastUpdatedString);
   }
 
   @override

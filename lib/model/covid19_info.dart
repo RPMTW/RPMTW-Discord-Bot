@@ -1,9 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/locale.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
+
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:rpmtw_discord_bot/utilities/util.dart';
 
@@ -37,25 +36,11 @@ class Covid19Info extends HiveObject {
   @HiveField(8)
   final DateTime lastUpdated;
 
-  Covid19Info({
-    required this.confirmed,
-    required this.localConfirmed,
-    required this.nonLocalConfirmed,
-    required this.death,
-    required this.totalConfirmed,
-    required this.totalLocalConfirmed,
-    required this.totalNonLocalConfirmed,
-    required this.totalDeath,
-    required this.lastUpdated,
-  });
+  /// last update time from the website
+  @HiveField(9)
+  final String lastUpdatedString;
 
-  @override
-  String toString() {
-    return 'Covid19Info(confirmed: $confirmed, localConfirmed: $localConfirmed, nonLocalConfirmed: $nonLocalConfirmed, death: $death, totalConfirmed: $totalConfirmed, totalLocalConfirmed: $totalLocalConfirmed, totalNonLocalConfirmed: $totalNonLocalConfirmed, totalDeath: $totalDeath, lastUpdated: $lastUpdated)';
-  }
-
-  EmbedBuilder generateEmbed() {
-    DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
+  Covid19Info? get yesterday {
     Box box = Data.covid19Box;
     int? yesterdayTime;
     int _index = box.keys
@@ -68,8 +53,28 @@ class Covid19Info extends HiveObject {
       yesterdayTime = box.keys.elementAt(_index - 1);
     }
 
-    Covid19Info? yesterday =
-        yesterdayTime != null ? box.get(yesterdayTime) : null;
+    if (yesterdayTime == null) {
+      return null;
+    } else {
+      return box.get(yesterdayTime.toString());
+    }
+  }
+
+  Covid19Info({
+    required this.confirmed,
+    required this.localConfirmed,
+    required this.nonLocalConfirmed,
+    required this.death,
+    required this.totalConfirmed,
+    required this.totalLocalConfirmed,
+    required this.totalNonLocalConfirmed,
+    required this.totalDeath,
+    required this.lastUpdated,
+    required this.lastUpdatedString,
+  });
+
+  EmbedBuilder generateEmbed() {
+    DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
 
     bool outbreak = confirmed > (yesterday?.confirmed ?? 0);
     DateFormat dateFormat = DateFormat.yMMMMEEEEd("zh-TW").add_jms();
@@ -96,9 +101,44 @@ class Covid19Info extends HiveObject {
 
     embed.addField(name: "疫情趨勢", content: outbreak ? '升溫' : '緩和');
     embed.timestamp = Util.getUTCTime();
-    embed.footer = EmbedFooterBuilder()
-      ..text = "資料來源：衛生福利部疾病管制署/國家高速網路與計算中心";
+    embed.footer = EmbedFooterBuilder()..text = "資料來源：衛生福利部疾病管制署/國家高速網路與計算中心";
 
     return embed;
+  }
+
+  @override
+  String toString() {
+    return 'Covid19Info(confirmed: $confirmed, localConfirmed: $localConfirmed, nonLocalConfirmed: $nonLocalConfirmed, death: $death, totalConfirmed: $totalConfirmed, totalLocalConfirmed: $totalLocalConfirmed, totalNonLocalConfirmed: $totalNonLocalConfirmed, totalDeath: $totalDeath, lastUpdated: $lastUpdated, lastUpdatedString: $lastUpdatedString)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is Covid19Info &&
+      other.confirmed == confirmed &&
+      other.localConfirmed == localConfirmed &&
+      other.nonLocalConfirmed == nonLocalConfirmed &&
+      other.death == death &&
+      other.totalConfirmed == totalConfirmed &&
+      other.totalLocalConfirmed == totalLocalConfirmed &&
+      other.totalNonLocalConfirmed == totalNonLocalConfirmed &&
+      other.totalDeath == totalDeath &&
+      other.lastUpdated == lastUpdated &&
+      other.lastUpdatedString == lastUpdatedString;
+  }
+
+  @override
+  int get hashCode {
+    return confirmed.hashCode ^
+      localConfirmed.hashCode ^
+      nonLocalConfirmed.hashCode ^
+      death.hashCode ^
+      totalConfirmed.hashCode ^
+      totalLocalConfirmed.hashCode ^
+      totalNonLocalConfirmed.hashCode ^
+      totalDeath.hashCode ^
+      lastUpdated.hashCode ^
+      lastUpdatedString.hashCode;
   }
 }

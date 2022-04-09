@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:instant/instant.dart';
+import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:rpmtw_discord_bot/utilities/util.dart';
@@ -59,6 +60,13 @@ class Covid19Handler {
 
     int totalDeath = _parseField(2, true);
 
+    String lastUpdatedString = document
+        .getElementsByClassName('col-lg-12 main')
+        .first
+        .getElementsByTagName("span")[1]
+        .text
+        .trim();
+
     return Covid19Info(
         confirmed: confirmed,
         localConfirmed: localConfirmed,
@@ -68,28 +76,33 @@ class Covid19Handler {
         totalDeath: totalDeath,
         totalLocalConfirmed: totalLocalConfirmed,
         totalNonLocalConfirmed: totalNonLocalConfirmed,
+        lastUpdatedString: lastUpdatedString,
         lastUpdated: Util.getUTCTime());
   }
 
-  static Future<Covid19Info> _save() async {
+  static Future<_Covid19FetchStatus> _save() async {
     Covid19Info info = await fetch();
     Box box = Data.covid19Box;
-    await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
+    bool duplicate = info.yesterday == info;
 
-    return info;
+    if (!duplicate) {
+      await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
+    }
+
+    return _Covid19FetchStatus(info, duplicate);
   }
 
   static Future<Covid19Info> latest() async {
     Box box = Data.covid19Box;
     if (box.isEmpty) {
-      return await _save();
+      return (await _save()).info;
     } else {
       List<int> timeList = box.keys.map((e) => int.parse(e)).toList()..sort();
 
       int lastUpdated = timeList.last;
       Covid19Info info = box.get(lastUpdated.toString());
       if (info.lastUpdated.difference(Util.getUTCTime()).inDays > 1) {
-        return await _save();
+        return (await _save()).info;
       } else {
         return info;
       }
@@ -104,9 +117,29 @@ class Covid19Handler {
       /// 中央流行疫情指揮中心通常在每天的下午兩點或三點公佈 Covid-19 疫情狀況
       bool enable = now.hour == 14 || now.hour == 15;
       if (enable) {
-        await _save();
-        timer.cancel();
+        try {
+          _Covid19FetchStatus status = await _save();
+
+          if (!status.duplicate) {
+            ITextChannel channel =
+                await dcClient.fetchChannel<ITextChannel>(chatChannelID);
+            channel.sendMessage(MessageBuilder()
+              ..content = '指揮中心發布了最新的疫情資訊囉！'
+              ..embeds = [status.info.generateEmbed()]);
+
+            timer.cancel();
+          }
+        } catch (e, stackTrace) {
+          await logger.error(error: e, stackTrace: stackTrace);
+        }
       }
     });
   }
+}
+
+class _Covid19FetchStatus {
+  final Covid19Info info;
+  final bool duplicate;
+
+  const _Covid19FetchStatus(this.info, this.duplicate);
 }

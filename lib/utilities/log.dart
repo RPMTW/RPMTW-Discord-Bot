@@ -2,10 +2,9 @@ import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Logger {
-  final INyxxWebsocket client;
   final ITextChannel channel;
 
-  Logger(this.client, this.channel);
+  Logger(this.channel);
 
   Future<void> info(String message) async {
     EmbedBuilder embed = EmbedBuilder();

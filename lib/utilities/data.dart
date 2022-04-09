@@ -10,10 +10,14 @@ import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/utilities/log.dart';
 import 'package:rpmtw_discord_bot/utilities/extension.dart';
 
-Snowflake get rpmtwDiscordServerID => 815819580840607807.toSnowflake();
-Snowflake get logChannelID => 934595900528025640.toSnowflake();
-Snowflake get siongsngUserID => 645588343228334080.toSnowflake();
-Snowflake get voiceChannelID => 832895058281758740.toSnowflake();
+final Snowflake rpmtwDiscordServerID = 815819580840607807.toSnowflake();
+final Snowflake logChannelID = 934595900528025640.toSnowflake();
+final Snowflake chatChannelID = 815819581440262146.toSnowflake();
+final Snowflake siongsngUserID = 645588343228334080.toSnowflake();
+final Snowflake voiceChannelID = 832895058281758740.toSnowflake();
+
+late final INyxxWebsocket _client;
+INyxxWebsocket get dcClient => _client;
 
 late final Logger _logger;
 Logger get logger => _logger;
@@ -40,8 +44,10 @@ class Data {
   }
 
   static Future<void> initOnReady(INyxxWebsocket client) async {
+    _client = client;
+
     ITextChannel channel =
-        await client.fetchChannel<ITextChannel>(logChannelID);
-    _logger = Logger(client, channel);
+        await dcClient.fetchChannel<ITextChannel>(logChannelID);
+    _logger = Logger(channel);
   }
 }
