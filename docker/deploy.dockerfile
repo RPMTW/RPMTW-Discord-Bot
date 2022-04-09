@@ -4,7 +4,7 @@ ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
 # Install dependencies.
-RUN apk add --no-cache --update wget gzip tar ca-certificates curl bind-tools openssh-client
+RUN apk add --no-cache --update wget gzip tar ca-certificates curl bind-tools openssh-client gcompat
 
 # Extract the executable archive.
 COPY . .
