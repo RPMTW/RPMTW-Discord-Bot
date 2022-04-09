@@ -21,7 +21,11 @@ class Covid19Handler {
     Document document = HtmlParser(html).parse();
 
     int _parseInt(String text) {
-      return int.parse(text.replaceAll(RegExp(r'[^\d]'), ''));
+      try {
+        return int.parse(text.replaceAll(RegExp(r'[^\d]'), ''));
+      } catch (e) {
+        return 0;
+      }
     }
 
     int _parseField(int index, bool isTitle) {
