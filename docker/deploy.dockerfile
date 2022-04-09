@@ -4,6 +4,7 @@ ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
 # Install dependencies.
+ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
