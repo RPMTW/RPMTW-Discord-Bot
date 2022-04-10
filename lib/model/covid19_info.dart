@@ -40,24 +40,9 @@ class Covid19Info extends HiveObject {
   @HiveField(9)
   final String lastUpdatedString;
 
-  Covid19Info? get yesterday {
+  Covid19Info get yesterday {
     Box box = Data.covid19Box;
-    int? yesterdayTime;
-    int _index = box.keys
-        .map((e) => int.parse(e))
-        .toList()
-        .indexOf(lastUpdated.millisecondsSinceEpoch);
-    if (_index == -1 || _index == 0) {
-      yesterdayTime = null;
-    } else {
-      yesterdayTime = int.parse(box.keys.elementAt(_index - 1));
-    }
-
-    if (yesterdayTime == null) {
-      return null;
-    } else {
-      return box.get(yesterdayTime.toString());
-    }
+    return box.get(box.keys.last);
   }
 
   Covid19Info({

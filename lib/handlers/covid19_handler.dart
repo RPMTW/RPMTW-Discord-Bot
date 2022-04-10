@@ -76,7 +76,8 @@ class Covid19Handler {
   static Future<_Covid19FetchStatus> _save() async {
     Covid19Info info = await fetch();
     Box box = Data.covid19Box;
-    bool duplicate = info.yesterday?.lastUpdatedString == info.lastUpdatedString;
+    bool duplicate =
+        info.yesterday.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
@@ -108,7 +109,7 @@ class Covid19Handler {
       DateTime now = dateTimeToOffset(offset: 8, datetime: Util.getUTCTime());
 
       /// 中央流行疫情指揮中心通常在每天的下午兩點或三點公佈 Covid-19 疫情狀況
-      bool enable = now.hour == 14 || now.hour == 15;
+      bool enable = (now.hour == 14 && now.minute > 12) || now.hour == 15;
       if (enable) {
         try {
           _Covid19FetchStatus status = await _save();
