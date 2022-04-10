@@ -14,7 +14,7 @@ services:
       - .env
     volumes:
       - ./data:/data
-    depends_on:
-      - lavalink
-    links:
-      - lavalink
+    # depends_on:
+    #   - lavalink
+    # links:
+    #   - lavalink
