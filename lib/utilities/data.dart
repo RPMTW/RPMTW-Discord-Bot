@@ -54,7 +54,7 @@ class Data {
         await dcClient.fetchChannel<ITextChannel>(logChannelID);
     _logger = Logger(channel);
     _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
-    await _cluster.addNode(NodeOptions());
+    await _cluster.addNode(NodeOptions(host: 'lavalink'));
     await Future.delayed(Duration(seconds: 2));
     MusicHandler.init();
   }

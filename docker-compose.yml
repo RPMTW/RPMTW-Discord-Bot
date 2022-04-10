@@ -1,11 +1,12 @@
 version: "3.9"
 services:
-  # lavalink:
-  #   build:
-  #     dockerfile: docker/lavalink.dockerfile
-  #     context: .
-  #   ports:
-  #     - 2333:2333
+  lavalink:
+    build:
+      dockerfile: docker/lavalink.dockerfile
+      context: .
+    ports:
+      - 2333:2333
+    container_name: lavalink
   rpmtw_discord_bot:
     build:
       dockerfile: docker/deploy.dockerfile
@@ -14,7 +15,8 @@ services:
       - .env
     volumes:
       - ./data:/data
-    # depends_on:
-    #   - lavalink
-    # links:
-    #   - lavalink
+    container_name: rpmtw-discord-bot
+    depends_on:
+      - lavalink
+    links:
+      - lavalink

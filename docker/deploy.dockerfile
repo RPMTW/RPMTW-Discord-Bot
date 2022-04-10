@@ -21,9 +21,9 @@ FROM scratch
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/main /app/bin/
 
-# Strat lavalink server.
-FROM fredboat/lavalink:master
-COPY docker/lavalink_config.yml /opt/Lavalink/application.yml
+# # Strat lavalink server.
+# FROM fredboat/lavalink:master
+# COPY docker/lavalink_config.yml /opt/Lavalink/application.yml
 
 # Start the program.
 CMD ["/app/bin/main"]
