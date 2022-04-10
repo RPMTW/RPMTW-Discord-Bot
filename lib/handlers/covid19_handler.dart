@@ -76,7 +76,7 @@ class Covid19Handler {
   static Future<_Covid19FetchStatus> _save() async {
     Covid19Info info = await fetch();
     Box box = Data.covid19Box;
-    bool duplicate = info.yesterday == info;
+    bool duplicate = info.yesterday?.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
@@ -119,8 +119,6 @@ class Covid19Handler {
             channel.sendMessage(MessageBuilder()
               ..content = '中央流行疫情指揮中心剛才發布了最新的疫情資訊囉！'
               ..embeds = [status.info.generateEmbed()]);
-
-            timer.cancel();
           }
         } catch (e, stackTrace) {
           await logger.error(error: e, stackTrace: stackTrace);
