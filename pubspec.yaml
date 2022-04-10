@@ -9,10 +9,10 @@ environment:
 dependencies:
   dotenv: ^3.0.0
   hive: ^2.1.0
-  nyxx: ^3.3.1
+  nyxx: ^3.4.0
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
-  nyxx_interactions: ^4.0.0
+  nyxx_interactions: ^4.1.0
   nyxx_lavalink: ^3.0.1
   nyxx_pagination: ^2.2.0
   path: ^1.8.1

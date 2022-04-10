@@ -26,6 +26,7 @@ class Logger {
     EmbedBuilder embed = EmbedBuilder();
     embed.title = 'Error';
     embed.description = error.toString();
+    embed.addField(name: 'Stack Trace', content: stackTrace.toString());
     embed.color = DiscordColor.red;
     embed.timestamp = Util.getUTCTime();
     print(
