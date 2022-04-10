@@ -130,8 +130,10 @@ class ScamDetection {
         IMember member = await guild.fetchMember(author.id);
 
         /// Timeout member for 7 days
-        await member.edit(
-            builder: MemberBuilder()
+        await Util.editGuildMember(
+            guild.id,
+            member.id,
+            MemberBuilder()
               ..timeoutUntil = Util.getUTCTime().add(Duration(days: 7)),
             auditReason: reason);
       } else {

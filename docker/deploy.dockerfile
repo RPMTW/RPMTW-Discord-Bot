@@ -1,4 +1,4 @@
- # Use latest dart image
+# Use latest dart image
 FROM dart:stable AS build
 ARG EXEC_DOWNLOAD_URL
 

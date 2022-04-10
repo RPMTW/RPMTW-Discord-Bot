@@ -1,8 +1,7 @@
-// ignore_for_file: implementation_imports
-
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 Map<Snowflake, IVoiceGuildChannel> _createdChannel = {};
 
@@ -24,19 +23,21 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
 
           _createdChannel.remove(user.id);
           await guildChannel.delete();
-        } else if (channel != null && channel.id == voiceChannelID) {
+        } else if (channel != null &&
+            channel.id == voiceChannelID &&
+            !user.bot) {
           final ChannelBuilder newVoiceChannel = _VoiceChannelBuilder.create(
-              '${user.username} 的頻道',
-              permissionOverwrites: PermissionOverrideBuilder(1, user.id)
-                ..manageRoles = true,
+              '${user.username}的頻道',
+              permissionOverwrites: [
+                PermissionOverrideBuilder(1, user.id)..manageRoles = true
+              ],
               parent: categoryID);
 
           final IVoiceGuildChannel guildChannel =
               await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
 
-          IMember member = await guild.fetchMember(user.id);
-          await member.edit(
-              builder: MemberBuilder()..channel = guildChannel.id);
+          await Util.editGuildMember(
+              guild.id, user.id, MemberBuilder()..channel = guildChannel.id);
 
           logger.info('成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)');
           _createdChannel[user.id] = guildChannel;
@@ -54,7 +55,7 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
   /// category id
   Snowflake? parent;
 
-  PermissionOverrideBuilder? permissionOverwrites;
+  List<PermissionOverrideBuilder>? permissionOverwrites;
 
   _VoiceChannelBuilder(this.name, {this.parent, this.permissionOverwrites}) {
     type = ChannelType.voice;
@@ -63,7 +64,7 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
   _VoiceChannelBuilder.create(
     String name, {
     Snowflake? parent,
-    PermissionOverrideBuilder? permissionOverwrites,
+    List<PermissionOverrideBuilder>? permissionOverwrites,
   }) : this(name, parent: parent, permissionOverwrites: permissionOverwrites);
 
   @override
@@ -71,9 +72,8 @@ class _VoiceChannelBuilder extends VoiceChannelBuilder {
         ...super.build(),
         'name': name,
         if (permissionOverwrites != null)
-          'permission_overwrites': [
-            permissionOverwrites!.build(),
-          ],
+          'permission_overwrites':
+              permissionOverwrites!.map((e) => e.build()).toList(),
         if (parent != null) 'parent_id': parent!.id.toString(),
         if (bitrate != null) 'bitrate': bitrate,
         if (userLimit != null) 'user_limit': userLimit,
