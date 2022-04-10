@@ -4,13 +4,21 @@ import 'dart:typed_data';
 import 'package:hive/hive.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
+import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
+import 'package:rpmtw_discord_bot/extension/track_info_extension.dart';
 import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
+import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
+import 'package:rpmtw_discord_bot/model/music_queue_page.dart';
+import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
+import 'package:rpmtw_discord_bot/model/music_search_result.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Interactions {
+  static final String _searchMusicSelectId = 'search_music_result';
+
   static SlashCommandBuilder get hello {
     SlashCommandBuilder _cmd =
         SlashCommandBuilder('hello', '跟你打招呼', [], guild: rpmtwDiscordServerID);
@@ -285,17 +293,353 @@ class Interactions {
     return _cmd;
   }
 
+  static SlashCommandBuilder get join {
+    SlashCommandBuilder _cmd = SlashCommandBuilder('join', '讓我進入您的語音頻道', [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+        return await MusicHandler.joinWithCommand(event);
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get search {
+    SlashCommandBuilder _cmd = SlashCommandBuilder(
+        'search',
+        '搜尋來自 Youtube/Youtube Music/SoundCloud 等平台的歌曲並加入隊列',
+        [
+          CommandOptionBuilder(CommandOptionType.string, 'query', '歌曲名稱或網址',
+              required: true),
+          CommandOptionBuilder(
+              CommandOptionType.string, 'platform', '平台 (預設為 Youtube)',
+              choices: [
+                ArgChoiceBuilder('Youtube', '0'),
+                ArgChoiceBuilder('Youtube Music', '1'),
+                ArgChoiceBuilder('SoundCloud', '3'),
+              ]),
+        ],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+
+        final IMember member = event.interaction.memberAuthor!;
+        final IChannel? channel =
+            await member.voiceState?.channel?.getOrDownload();
+        if (channel == null) {
+          return await event
+              .respond(MessageBuilder.content('請先連線語音頻道，才能使用此功能。'));
+        }
+
+        if (!MusicHandler.isPlaying()) {
+          await MusicHandler.joinWithCommand(event, onlyJoin: false);
+        }
+
+        final int _platformId =
+            int.parse(event.interaction.getArg('platform') ?? '0');
+        final MusicSearchPlatform platform =
+            MusicSearchPlatform.values.firstWhere((e) => e.id == _platformId);
+        final String query = event.interaction.getArg('query');
+
+        final MusicSearchResult result =
+            await MusicHandler.search(query, platform);
+        final List<ITrackInfo> infos = result.trackInfos;
+
+        if (result.isPlaylist) {
+          infos.map((e) => e.identifier).forEach(MusicHandler.playByIdentifier);
+          return await event.respond(MessageBuilder.content(
+              '已將 `${result.playlistInfo!.name}` 播放清單加入隊列。'));
+        } else if (infos.length > 1) {
+          MultiselectBuilder selectBuilder =
+              MultiselectBuilder(_searchMusicSelectId)
+                ..minValues = 1
+                ..maxValues = infos.length < 20 ? infos.length : 20;
+
+          for (final ITrackInfo info in infos) {
+            final List<int> titleCodeUnits = info.title.codeUnits;
+
+            /// Title length must be less than 100.
+            final String title = String.fromCharCodes(titleCodeUnits.take(96)) +
+                (titleCodeUnits.length > 96 ? '...' : '');
+
+            selectBuilder.addOption(
+                MultiselectOptionBuilder(title, info.identifier)
+                  ..description = info.uri);
+          }
+
+          /// Timeout
+          Future.delayed(Duration(minutes: 1), () async {
+            try {
+              await event.deleteOriginalResponse();
+            } catch (e) {
+              // ignore
+            }
+          });
+
+          return await event.respond(ComponentMessageBuilder()
+            ..addComponentRow(
+                ComponentRowBuilder()..addComponent(selectBuilder)));
+        } else if (infos.length == 1) {
+          await MusicHandler.playByIdentifier(infos.first.identifier);
+          return await event.respond(
+              MessageBuilder.content('已將 `${infos.first.title}` 加入隊列。'));
+        } else {
+          return await event.respond(MessageBuilder.content('搜尋不到任何歌曲。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get leave {
+    SlashCommandBuilder _cmd = SlashCommandBuilder('leave', '離開語音頻道並結束播放歌曲', [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+        final IMember member = event.interaction.memberAuthor!;
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+
+        if (hasPermission) {
+          bool playing = MusicHandler.isPlaying();
+          if (playing) {
+            MusicHandler.leave();
+            return await event.respond(MessageBuilder.content('已結束播放歌曲。'));
+          } else {
+            return await event
+                .respond(MessageBuilder.content('請先播放歌曲才能使用此功能。'));
+          }
+        } else {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get pause {
+    SlashCommandBuilder _cmd =
+        SlashCommandBuilder('pause', '暫停播放音樂', [], guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+        final IMember member = event.interaction.memberAuthor!;
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+
+        if (hasPermission) {
+          MusicHandler.pause();
+          return await event.respond(MessageBuilder.content('已暫停播放歌曲。'));
+        } else {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get resume {
+    SlashCommandBuilder _cmd = SlashCommandBuilder('resume', '繼續播放音樂', [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+        final IMember member = event.interaction.memberAuthor!;
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+
+        if (hasPermission) {
+          MusicHandler.resume();
+          return await event.respond(MessageBuilder.content('已繼續播放歌曲。'));
+        } else {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get volume {
+    SlashCommandBuilder _cmd = SlashCommandBuilder(
+        'volume',
+        '調整歌曲的音量',
+        [
+          CommandOptionBuilder(
+              CommandOptionType.integer, 'volume', '音量 (0-1000，預設 100)',
+              min: 0, max: 1000, required: true)
+        ],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        await event.acknowledge();
+
+        final int volume = event.interaction.getArg('volume');
+        final IMember member = event.interaction.memberAuthor!;
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+
+        if (hasPermission) {
+          bool playing = MusicHandler.isPlaying();
+          if (playing) {
+            MusicHandler.setVolume(volume);
+            return await event
+                .respond(MessageBuilder.content('已將歌曲音量調整至 $volume%。'));
+          } else {
+            return await event
+                .respond(MessageBuilder.content('請先播放歌曲才能使用此功能。'));
+          }
+        } else {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get nowPlaying {
+    SlashCommandBuilder _cmd =
+        SlashCommandBuilder('np', '查看正在播放的歌曲', [], guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        final IGuildPlayer player = MusicHandler.getOrCreatePlayer();
+        final IQueuedTrack? queuedTrack = player.nowPlaying;
+        final ITrackInfo? info = queuedTrack?.track.info;
+
+        if (queuedTrack == null) {
+          return await event.respond(MessageBuilder.content('請先播放歌曲才能使用此功能。'));
+        } else if (info != null) {
+          return await event
+              .respond(MessageBuilder.embed(info.generateEmbed()));
+        } else {
+          return await event.respond(MessageBuilder.content('沒有此歌曲的資訊'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get queue {
+    SlashCommandBuilder _cmd =
+        SlashCommandBuilder('queue', '查看歌曲隊列', [], guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        final IGuildPlayer player = MusicHandler.getOrCreatePlayer();
+        final List<IQueuedTrack> queuedTracks = player.queue;
+
+        if (queuedTracks.isEmpty) {
+          return await event.respond(MessageBuilder.content('歌曲隊列為空。'));
+        }
+
+        List<EmbedBuilder> embeds = [];
+        final IUser user =
+            await event.interaction.memberAuthor?.user.getOrDownload() ??
+                event.interaction.userAuthor!;
+
+        final List<ITrack> tracks = (queuedTracks
+              ..retainWhere((e) => e.track.info != null))
+            .map((e) => e.track)
+            .toList();
+
+        for (final ITrack track in tracks) {
+          embeds.add(track.info!.generateEmbed());
+        }
+
+        final paginator =
+            MusicQueuePage(event.interactions, embeds, tracks, user);
+
+        return await event.respond(paginator.initMessageBuilder());
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static SlashCommandBuilder get skip {
+    SlashCommandBuilder _cmd = SlashCommandBuilder('skip', '跳過並播放下首歌曲', [],
+        guild: rpmtwDiscordServerID);
+    _cmd.registerHandler((event) async {
+      try {
+        final IMember member = event.interaction.memberAuthor!;
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+
+        if (hasPermission) {
+          bool playing = MusicHandler.isPlaying();
+          if (playing) {
+            MusicHandler.skip();
+            return await event.respond(MessageBuilder.content('已跳過歌曲。'));
+          } else {
+            return await event
+                .respond(MessageBuilder.content('請先播放歌曲才能使用此功能。'));
+          }
+        } else {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+      } catch (e, stackTrace) {
+        await logger.error(error: e, stackTrace: stackTrace);
+      }
+    });
+    return _cmd;
+  }
+
+  static Future<void> _musicSearchSelectHandler(
+      IMultiselectInteractionEvent event) async {
+    await event.acknowledge();
+
+    final List<String> identifiers = event.interaction.values;
+    identifiers.forEach(MusicHandler.playByIdentifier);
+    await event.deleteOriginalResponse();
+
+    await event.sendFollowup(
+        MessageBuilder.content('已將 ${identifiers.length} 首歌曲加入隊列。'));
+  }
+
   static void register(INyxxWebsocket client) {
     IInteractions interactions =
         IInteractions.create(WebsocketInteractionBackend(client));
 
+    /// Base
     interactions.registerSlashCommand(hello);
+    interactions.registerSlashCommand(info);
+
+    /// RPMWiki
     interactions.registerSlashCommand(searchMods);
     interactions.registerSlashCommand(viewMod);
-    interactions.registerSlashCommand(info);
+
+    /// Chef
     interactions.registerSlashCommand(chef);
     interactions.registerSlashCommand(chefRank);
+
+    /// Music
+    interactions.registerSlashCommand(join);
+    interactions.registerSlashCommand(search);
+    interactions.registerSlashCommand(leave);
+    interactions.registerSlashCommand(pause);
+    interactions.registerSlashCommand(resume);
+    interactions.registerSlashCommand(volume);
+    interactions.registerSlashCommand(nowPlaying);
+    interactions.registerSlashCommand(queue);
+    interactions.registerSlashCommand(skip);
+
+    /// Other
     interactions.registerSlashCommand(covid_19);
+
+    /// Handlers
+    interactions.registerMultiselectHandler(
+        _searchMusicSelectId, _musicSearchSelectHandler);
 
     interactions.syncOnReady();
   }

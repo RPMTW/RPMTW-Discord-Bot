@@ -35,7 +35,7 @@ class Covid19Handler {
       Element element;
 
       if (isTitle) {
-        element = _element.getElementsByClassName("num").first;
+        element = _element.getElementsByClassName('num').first;
       } else {
         element = _element.getElementsByTagName('p').first;
       }
@@ -58,7 +58,7 @@ class Covid19Handler {
     int totalDeath = _parseField(4, false);
 
     String lastUpdatedString =
-        document.getElementsByClassName("sub").first.text.trim();
+        document.getElementsByClassName('sub').first.text.trim();
 
     return Covid19Info(
         confirmed: confirmed,
@@ -76,8 +76,7 @@ class Covid19Handler {
   static Future<_Covid19FetchStatus> _save() async {
     Covid19Info info = await fetch();
     Box box = Data.covid19Box;
-    bool duplicate =
-        info.yesterday.lastUpdatedString == info.lastUpdatedString;
+    bool duplicate = info.yesterday.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);

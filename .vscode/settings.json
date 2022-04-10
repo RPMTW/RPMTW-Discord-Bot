@@ -1,5 +1,8 @@
 {
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "file:///media/siongsng/Data/coding/Dart/PRMTW-Discord-Bot/.github/workflows/deploy.yaml"
-    }
+    },
+    "cSpell.words": [
+        "soundcloud"
+    ]
 }

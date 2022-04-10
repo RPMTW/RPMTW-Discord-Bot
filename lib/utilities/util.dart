@@ -18,8 +18,8 @@ class Util {
     HttpEndpoints httpEndpoints = dcClient.httpEndpoints as HttpEndpoints;
 
     await httpEndpoints.executeSafe(BasicRequest(
-        "/guilds/$guildId/members/$memberId",
-        method: "PATCH",
+        '/guilds/$guildId/members/$memberId',
+        method: 'PATCH',
         auditLog: auditReason,
         body: builder.build()));
   }

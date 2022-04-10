@@ -69,7 +69,7 @@ class Covid19Info extends HiveObject {
         nonLocalConfirmed > (_yesterday?.nonLocalConfirmed ?? 0);
     final bool deathOutbreak = death > (_yesterday?.death ?? 0);
 
-    final DateFormat dateFormat = DateFormat.yMMMMEEEEd("zh-TW").add_jms();
+    final DateFormat dateFormat = DateFormat.yMMMMEEEEd('zh-TW').add_jms();
     final String upArrow = '⬆';
     final String downArrow = '⬇';
 
@@ -79,36 +79,36 @@ class Covid19Info extends HiveObject {
     embed.color = outbreak ? DiscordColor.red : DiscordColor.green;
 
     embed.addField(
-        name: "新增病例",
+        name: '新增病例',
         content: '${outbreak ? upArrow : downArrow} $confirmed',
         inline: true);
     embed.addField(
-        name: "本土確診",
+        name: '本土確診',
         content: '${localOutbreak ? upArrow : downArrow} $localConfirmed',
         inline: true);
     embed.addField(
-        name: "境外移入",
+        name: '境外移入',
         content: '${nonLocalOutbreak ? upArrow : downArrow} $nonLocalConfirmed',
         inline: true);
 
     embed.addField(
-        name: "累計確診", content: totalConfirmed.toString(), inline: true);
+        name: '累計確診', content: totalConfirmed.toString(), inline: true);
     embed.addField(
-        name: "累計本土確診", content: totalLocalConfirmed.toString(), inline: true);
+        name: '累計本土確診', content: totalLocalConfirmed.toString(), inline: true);
     embed.addField(
-        name: "累計境外移入",
+        name: '累計境外移入',
         content: totalNonLocalConfirmed.toString(),
         inline: true);
 
     embed.addField(
-        name: "死亡",
+        name: '死亡',
         content: '${deathOutbreak ? upArrow : downArrow} $death',
         inline: true);
-    embed.addField(name: "累計死亡", content: totalDeath.toString(), inline: true);
+    embed.addField(name: '累計死亡', content: totalDeath.toString(), inline: true);
 
-    embed.addField(name: "疫情趨勢", content: outbreak ? '升溫' : '緩和');
+    embed.addField(name: '疫情趨勢', content: outbreak ? '升溫' : '緩和');
     embed.timestamp = Util.getUTCTime();
-    embed.footer = EmbedFooterBuilder()..text = "資料來源：衛生福利部疾病管制署/Yahoo 奇摩新聞";
+    embed.footer = EmbedFooterBuilder()..text = '資料來源：衛生福利部疾病管制署/Yahoo 奇摩新聞';
 
     return embed;
   }

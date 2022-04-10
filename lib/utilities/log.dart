@@ -1,4 +1,5 @@
 import 'package:nyxx/nyxx.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Logger {
@@ -26,9 +27,12 @@ class Logger {
     EmbedBuilder embed = EmbedBuilder();
     embed.title = 'Error';
     embed.description = error.toString();
-    embed.addField(name: 'Stack Trace', content: stackTrace.toString());
+    if (!stackTrace.toString().isAllEmpty) {
+      embed.addField(name: 'Stack Trace', content: stackTrace.toString());
+    }
     embed.color = DiscordColor.red;
     embed.timestamp = Util.getUTCTime();
+
     print(
         '[${Util.getUTCTime()}] [Error] ${error.toString()}\n${stackTrace.toString()}');
     try {
