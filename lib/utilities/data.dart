@@ -55,8 +55,7 @@ class Data {
     _logger = Logger(channel);
     _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
     await _cluster.addNode(NodeOptions());
-    await Future.delayed(Duration(seconds: 1));
-    await MusicHandler.leave();
+    await Future.delayed(Duration(seconds: 2));
     MusicHandler.init();
   }
 }

@@ -116,12 +116,8 @@ class MusicHandler {
 
     final INode node = getNode();
     node.clearPlayers();
-    IGuild guild = await dcClient.fetchGuild(rpmtwDiscordServerID);
-    IMember selfMember = await guild.selfMember.getOrDownload();
-    IVoiceGuildChannel? channel = (await selfMember.voiceState?.channel
-        ?.getOrDownload()) as IVoiceGuildChannel?;
 
-    channel?.disconnect();
+    _playingChannel?.disconnect();
     _playingChannel = null;
     _playingMember = null;
   }
