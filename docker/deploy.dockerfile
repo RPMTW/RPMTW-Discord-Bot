@@ -1,5 +1,6 @@
 # Use latest dart image
 FROM dart:stable AS build
+
 ARG EXEC_DOWNLOAD_URL
 
 WORKDIR /app
@@ -19,6 +20,10 @@ RUN chmod +x bin/main
 FROM scratch
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/main /app/bin/
+
+# Strat lavalink server.
+FROM fredboat/lavalink:master
+COPY docker/lavalink_config.yml /opt/Lavalink/application.yml
 
 # Start the program.
 CMD ["/app/bin/main"]
