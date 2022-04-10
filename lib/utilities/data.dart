@@ -54,7 +54,10 @@ class Data {
         await dcClient.fetchChannel<ITextChannel>(logChannelID);
     _logger = Logger(channel);
     _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
-    await _cluster.addNode(NodeOptions(host: 'lavalink'));
+
+    // https://lavalink-list.darrennathanael.com/NoSSL/lavalink-without-ssl/
+    await _cluster.addNode(
+        NodeOptions(host: 'weez-node.cf', password: 'FreeLava', port: 2333));
     await Future.delayed(Duration(seconds: 2));
     MusicHandler.init();
   }
