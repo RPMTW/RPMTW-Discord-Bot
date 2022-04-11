@@ -7,6 +7,7 @@ services:
       context: .
     restart: unless-stopped
   rpmtw_discord_bot:
+    container_name: rpmtw_discord_bot
     build:
       dockerfile: docker/deploy.dockerfile
       context: .

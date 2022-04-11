@@ -520,8 +520,8 @@ class Interactions {
         if (queuedTrack == null) {
           return await event.respond(MessageBuilder.content('請先播放歌曲才能使用此功能。'));
         } else if (info != null) {
-          return await event
-              .respond(MessageBuilder.embed(info.generateEmbed()));
+          return await event.respond(
+              MessageBuilder.embed(info.generateEmbed(progressBar: true)));
         } else {
           return await event.respond(MessageBuilder.content('沒有此歌曲的資訊'));
         }

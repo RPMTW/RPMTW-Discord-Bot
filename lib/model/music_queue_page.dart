@@ -31,7 +31,7 @@ class MusicQueuePage extends ComponentPaginationAbstract {
   @override
   ComponentMessageBuilder initHook(ComponentMessageBuilder builder) {
     final buttonId = '${customPreId}_skipButton';
-    final skipButton = ButtonBuilder('改聽這首歌', buttonId, ButtonStyle.success);
+    final skipButton = ButtonBuilder('▶️', buttonId, ButtonStyle.primary);
 
     interactions.events.onButtonEvent
         .where((event) => event.interaction.customId == buttonId)
@@ -42,7 +42,9 @@ class MusicQueuePage extends ComponentPaginationAbstract {
       await event.respond(MessageBuilder.empty());
     });
     builder.content = '歌曲隊列 (共有 ${embeds.length} 首)';
-    builder.componentRows?.add(ComponentRowBuilder()..addComponent(skipButton));
+    final ComponentRowBuilder rowBuilder = builder.componentRows!.first;
+    builder.componentRows!.clear();
+    builder.componentRows!.add(rowBuilder..addComponent(skipButton));
 
     return builder;
   }

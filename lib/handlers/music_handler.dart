@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
@@ -10,7 +12,9 @@ class MusicHandler {
 
   static IVoiceGuildChannel? _playingChannel;
   static IMember? _playingMember;
+  static int? _playingPosition;
   static IGuildPlayer? _player;
+
   static late final ICluster _cluster;
 
   static INode getNode() =>
@@ -26,12 +30,14 @@ class MusicHandler {
     _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
 
     try {
-      /// Wait for the lavalink server to be ready
-      await Future.delayed(Duration(seconds: 5));
-      await _cluster.addNode(NodeOptions(host: 'lavalink'));
+      /// Waiting for the lavalink server to be ready
+      logger.info('Connecting to lavalink...');
+      await Future.delayed(Duration(seconds: 10));
+      await _cluster.addNode(NodeOptions());
+
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();
-    } catch (e) {
+    } on SocketException {
       logger.warn('Failed to connect to Lavalink node');
     }
     eventHandler();
@@ -48,7 +54,13 @@ class MusicHandler {
         await leave();
       }
     });
+
+    dispatcher.onPlayerUpdate.listen((IPlayerUpdateEvent event) {
+      _playingPosition = event.state.position;
+    });
   }
+
+  static int? getPlayingPosition() => _playingPosition;
 
   static Future<IPlayParameters> playByIdentifier(String identifier) async {
     final ITrack? track = _cacheTracks[identifier];
@@ -127,7 +139,7 @@ class MusicHandler {
     }
 
     final INode node = getNode();
-    node.clearPlayers();
+    node.stop(rpmtwDiscordServerID);
 
     _playingChannel?.disconnect();
     _playingChannel = null;
@@ -151,8 +163,8 @@ class MusicHandler {
     getNode().volume(rpmtwDiscordServerID, volume);
   }
 
-  static void shutdown() async {
-    getNode().shutdown();
+  static void disconnect() async {
+    getNode().disconnect();
   }
 
   static Future<MusicSearchResult> search(
