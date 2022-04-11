@@ -4,9 +4,10 @@ services:
     build:
       dockerfile: docker/lavalink.dockerfile
       context: .
-    ports:
-      - 2333:2333
     container_name: lavalink
+    hostname: lavalink
+    networks:
+      - lavalink-net
   rpmtw_discord_bot:
     build:
       dockerfile: docker/deploy.dockerfile
@@ -18,5 +19,9 @@ services:
     container_name: rpmtw-discord-bot
     depends_on:
       - lavalink
-    links:
-      - lavalink
+
+    networks:
+      - lavalink-net
+
+networks:
+  lavalink-net:

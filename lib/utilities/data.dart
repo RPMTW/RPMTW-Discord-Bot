@@ -4,7 +4,6 @@ import 'package:dotenv/dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
 import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
@@ -21,18 +20,16 @@ final Snowflake voiceChannelID = 832895058281758740.toSnowflake();
 late final INyxxWebsocket _client;
 INyxxWebsocket get dcClient => _client;
 
-late final Logger _logger;
-Logger get logger => _logger;
+late final BotLogger _logger;
+BotLogger get logger => _logger;
 late bool kDebugMode;
 
 class Data {
   static late final Box _chefBox;
   static late final Box _covid19Box;
-  static late final ICluster _cluster;
 
   static Box get chefBox => _chefBox;
   static Box get covid19Box => _covid19Box;
-  static ICluster get cluster => _cluster;
 
   static Future<void> init() async {
     load();
@@ -52,13 +49,7 @@ class Data {
 
     ITextChannel channel =
         await dcClient.fetchChannel<ITextChannel>(logChannelID);
-    _logger = Logger(channel);
-    _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
-
-    // https://lavalink-list.darrennathanael.com/NoSSL/lavalink-without-ssl/
-    await _cluster.addNode(
-        NodeOptions(host: 'weez-node.cf', password: 'FreeLava', port: 2333));
-    await Future.delayed(Duration(seconds: 2));
-    MusicHandler.init();
+    _logger = BotLogger(channel);
+    await MusicHandler.init();
   }
 }

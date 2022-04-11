@@ -2,9 +2,9 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx/src/internal/http_endpoints.dart';
 import 'package:nyxx/src/internal/http/http_request.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 final String _pattern =
     r'(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
@@ -33,15 +33,17 @@ class ScamDetection {
         'discordstatus.com',
         'discord.media',
 
-        /// 社群域名
+        /// Discord 社群域名
         'discordresources.com',
         'discord.wiki',
         'discordservers.tw',
+        'discord.st',
 
         // Steam 官方域名
         'steampowered.com',
         'steamcommunity.com',
         'steamdeck.com',
+        'steamchina',
 
         // 在 Alexa 名列前茅的 .gift 和 .gifts 域名
         'crediter.gift',
@@ -130,11 +132,9 @@ class ScamDetection {
         IMember member = await guild.fetchMember(author.id);
 
         /// Timeout member for 7 days
-        await Util.editGuildMember(
-            guild.id,
-            member.id,
-            MemberBuilder()
-              ..timeoutUntil = Util.getUTCTime().add(Duration(days: 7)),
+        await member.edit(
+            builder: MemberBuilder()
+              ..timeoutUntil = RPMTWUtil.getUTCTime().add(Duration(days: 7)),
             auditReason: reason);
       } else {
         HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;

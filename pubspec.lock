@@ -315,7 +315,7 @@ packages:
       name: nyxx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "3.4.1"
   nyxx_commander:
     dependency: "direct main"
     description:
@@ -406,7 +406,7 @@ packages:
       name: rpmtw_dart_common_library
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   shelf:
     dependency: transitive
     description:

@@ -1,7 +1,6 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 Map<Snowflake, IVoiceGuildChannel> _createdChannel = {};
 
@@ -35,9 +34,9 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
 
           final IVoiceGuildChannel guildChannel =
               await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
-
-          await Util.editGuildMember(
-              guild.id, user.id, MemberBuilder()..channel = guildChannel.id);
+          IMember member = await guild.fetchMember(user.id);
+          await member.edit(
+              builder: MemberBuilder()..channel = guildChannel.id);
 
           logger.info('成功建立 <@${user.id}> 的動態語音頻道 (<#${guildChannel.id}>)');
           _createdChannel[user.id] = guildChannel;

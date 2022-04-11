@@ -6,6 +6,7 @@ import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/extension/track_info_extension.dart';
 import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
 import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
@@ -14,7 +15,6 @@ import 'package:rpmtw_discord_bot/model/music_queue_page.dart';
 import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
 import 'package:rpmtw_discord_bot/model/music_search_result.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Interactions {
   static final String _searchMusicSelectId = 'search_music_result';
@@ -56,7 +56,7 @@ class Interactions {
         embed.title = '模組搜尋結果';
         embed.description =
             '共搜尋到 ${mods.length} 個模組，由於 Discord 技術限制最多只會顯示 5 個模組';
-        embed.timestamp = Util.getUTCTime();
+        embed.timestamp = RPMTWUtil.getUTCTime();
 
         for (MinecraftMod mod in mods) {
           embed.addField(
@@ -120,7 +120,7 @@ class Interactions {
             content: mod.supportVersions.map((e) => e.id).join('、'));
         embed.addField(name: '瀏覽次數', content: mod.viewCount, inline: true);
 
-        embed.timestamp = Util.getUTCTime();
+        embed.timestamp = RPMTWUtil.getUTCTime();
 
         componentMessageBuilder.embeds = [embed];
 
@@ -148,7 +148,7 @@ class Interactions {
           return '$current/${rss}MB';
         }
 
-        DateTime now = Util.getUTCTime();
+        DateTime now = RPMTWUtil.getUTCTime();
         DateTime start = client.startTime;
 
         EmbedBuilder embed = EmbedBuilder();
@@ -264,7 +264,7 @@ class Interactions {
               content: '<@!${entry.key}> 被廚了 ${entry.value} 次');
         }
 
-        embed.timestamp = Util.getUTCTime();
+        embed.timestamp = RPMTWUtil.getUTCTime();
 
         return await event.respond(MessageBuilder.embed(embed));
       } catch (e, stackTrace) {

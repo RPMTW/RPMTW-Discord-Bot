@@ -2,9 +2,9 @@ import 'package:hive/hive.dart';
 import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 part 'covid19_info.g.dart';
 
@@ -42,7 +42,10 @@ class Covid19Info extends HiveObject {
 
   Covid19Info get yesterday {
     Box box = Data.covid19Box;
-    return box.get(box.keys.last);
+    List<int> keys = box.keys.map((e) => int.parse(e.toString())).toList()
+      ..sort();
+
+    return box.get(keys.last);
   }
 
   Covid19Info({
@@ -107,7 +110,7 @@ class Covid19Info extends HiveObject {
     embed.addField(name: '累計死亡', content: totalDeath.toString(), inline: true);
 
     embed.addField(name: '疫情趨勢', content: outbreak ? '升溫' : '緩和');
-    embed.timestamp = Util.getUTCTime();
+    embed.timestamp = RPMTWUtil.getUTCTime();
     embed.footer = EmbedFooterBuilder()..text = '資料來源：衛生福利部疾病管制署/Yahoo 奇摩新聞';
 
     return embed;

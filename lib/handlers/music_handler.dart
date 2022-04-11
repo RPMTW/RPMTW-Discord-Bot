@@ -7,12 +7,14 @@ import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 class MusicHandler {
   static final Map<String, ITrack> _cacheTracks = {};
+
   static IVoiceGuildChannel? _playingChannel;
   static IMember? _playingMember;
   static IGuildPlayer? _player;
+  static late final ICluster _cluster;
 
   static INode getNode() =>
-      Data.cluster.getOrCreatePlayerNode(rpmtwDiscordServerID);
+      _cluster.getOrCreatePlayerNode(rpmtwDiscordServerID);
 
   static IGuildPlayer getOrCreatePlayer() {
     _player ??= getNode().createPlayer(rpmtwDiscordServerID);
@@ -20,13 +22,22 @@ class MusicHandler {
     return _player!;
   }
 
-  static void init() {
-    getOrCreatePlayer();
+  static Future<void> init() async {
+    _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
+
+    // https://lavalink-list.darrennathanael.com/NoSSL/lavalink-without-ssl/
+    try {
+      await _cluster.addNode(NodeOptions(host: 'lavalink'));
+      await Future.delayed(Duration(seconds: 2));
+      getOrCreatePlayer();
+    } catch (e) {
+      logger.warn('Failed to connect to Lavalink node');
+    }
     eventHandler();
   }
 
   static void eventHandler() {
-    IEventDispatcher dispatcher = Data.cluster.eventDispatcher;
+    IEventDispatcher dispatcher = _cluster.eventDispatcher;
 
     dispatcher.onTrackEnd.listen((ITrackEndEvent event) async {
       final List<IQueuedTrack> queue = getOrCreatePlayer().queue;

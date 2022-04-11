@@ -2,7 +2,6 @@ import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 import 'package:rpmtw_discord_bot/handlers/scam_detection.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
   @override
@@ -34,8 +33,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
         String prefix = '約瑟．';
         String name = member.nickname ?? author.username;
         if (!name.contains(prefix)) {
-          await Util.editGuildMember(
-              guild.id, member.id, MemberBuilder()..nick = prefix + name);
+          await member.edit(builder: MemberBuilder()..nick = prefix + name);
         }
       }
     }

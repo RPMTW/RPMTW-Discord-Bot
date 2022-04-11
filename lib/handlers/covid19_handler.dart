@@ -6,9 +6,9 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:instant/instant.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
 class Covid19Handler {
   static const String _url =
@@ -70,7 +70,7 @@ class Covid19Handler {
         totalLocalConfirmed: totalLocalConfirmed,
         totalNonLocalConfirmed: totalNonLocalConfirmed,
         lastUpdatedString: lastUpdatedString,
-        lastUpdated: Util.getUTCTime());
+        lastUpdated: RPMTWUtil.getUTCTime());
   }
 
   static Future<_Covid19FetchStatus> _save() async {
@@ -94,7 +94,7 @@ class Covid19Handler {
 
       int lastUpdated = timeList.last;
       Covid19Info info = box.get(lastUpdated.toString());
-      if (info.lastUpdated.difference(Util.getUTCTime()).inDays > 1) {
+      if (info.lastUpdated.difference(RPMTWUtil.getUTCTime()).inDays > 1) {
         return (await _save()).info;
       } else {
         return info;
@@ -105,7 +105,7 @@ class Covid19Handler {
   static void timer() {
     Timer.periodic(Duration(minutes: 1), (timer) async {
       /// UTC+8 (Taipei Time)
-      DateTime now = dateTimeToOffset(offset: 8, datetime: Util.getUTCTime());
+      DateTime now = dateTimeToOffset(offset: 8, datetime: RPMTWUtil.getUTCTime());
 
       /// 中央流行疫情指揮中心通常在每天的下午兩點或三點公佈 Covid-19 疫情狀況
       bool enable = (now.hour == 14 && now.minute > 12) || now.hour == 15;

@@ -1,24 +1,39 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
 
-class Logger {
+class BotLogger {
   final ITextChannel channel;
 
-  Logger(this.channel);
+  const BotLogger(this.channel);
 
   Future<void> info(String message) async {
     EmbedBuilder embed = EmbedBuilder();
     embed.title = 'Info';
     embed.description = message;
     embed.color = DiscordColor.green;
-    embed.timestamp = Util.getUTCTime();
-    print('[${Util.getUTCTime()}] [INFO] $message');
+    embed.timestamp = RPMTWUtil.getUTCTime();
+    RPMTWLogger.info(message);
     try {
       await channel.sendMessage(MessageBuilder.embed(embed));
-    } catch (e) {
-      print(
-          '[${Util.getUTCTime()}] [Error] Failed to send info message to discord\n${e.toString()}');
+    } catch (e, stackTrace) {
+      RPMTWLogger.error('Failed to send info message to discord',
+          error: e, stackTrace: stackTrace);
+    }
+  }
+
+  // Send warning message to discord channel and print to console
+  Future<void> warn(String message) async {
+    EmbedBuilder embed = EmbedBuilder();
+    embed.title = 'Warning';
+    embed.description = message;
+    embed.color = DiscordColor.yellow;
+    embed.timestamp = RPMTWUtil.getUTCTime();
+    RPMTWLogger.warning(message);
+    try {
+      await channel.sendMessage(MessageBuilder.embed(embed));
+    } catch (e, stackTrace) {
+      RPMTWLogger.warning('Failed to send warning message to discord\n$e',
+          stackTrace: stackTrace);
     }
   }
 
@@ -31,15 +46,14 @@ class Logger {
       embed.addField(name: 'Stack Trace', content: stackTrace.toString());
     }
     embed.color = DiscordColor.red;
-    embed.timestamp = Util.getUTCTime();
+    embed.timestamp = RPMTWUtil.getUTCTime();
 
-    print(
-        '[${Util.getUTCTime()}] [Error] ${error.toString()}\n${stackTrace.toString()}');
+    RPMTWLogger.error(error.toString(), stackTrace: stackTrace);
     try {
       await channel.sendMessage(MessageBuilder.embed(embed));
-    } catch (e) {
-      print(
-          '[${Util.getUTCTime()}] [Error] Failed to send error message to discord\n${e.toString()}');
+    } catch (e, stackTrace) {
+      RPMTWLogger.warning('Failed to send error message to discord\n$e',
+          stackTrace: stackTrace);
     }
   }
 }

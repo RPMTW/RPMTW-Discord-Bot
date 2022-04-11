@@ -1,5 +1,5 @@
 import 'package:nyxx/nyxx.dart';
-import 'package:rpmtw_discord_bot/utilities/util.dart';
+import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 
 class Changelog {
   final INyxxWebsocket client;
@@ -20,7 +20,7 @@ class Changelog {
     embed.addField(name: '原始訊息', content: old.content);
     embed.addField(name: '修改後訊息', content: updated.content);
     embed.color = DiscordColor.fromHexString('#4deb87');
-    embed.timestamp = Util.getUTCTime();
+    embed.timestamp = RPMTWUtil.getUTCTime();
 
     await channel.sendMessage(MessageBuilder.embed(embed));
   }
@@ -36,7 +36,7 @@ class Changelog {
         '<@${message.author.id}> 在 <#${message.channel.id}> 刪除訊息';
     embed.addField(name: '刪除的訊息內容', content: message.content);
     embed.color = DiscordColor.fromHexString('#f51707');
-    embed.timestamp = Util.getUTCTime();
+    embed.timestamp = RPMTWUtil.getUTCTime();
 
     await channel.sendMessage(MessageBuilder.embed(embed));
   }
