@@ -4,10 +4,10 @@ services:
     build:
       dockerfile: docker/lavalink.dockerfile
       context: .
-    container_name: lavalink
     hostname: lavalink
+    restart: unless-stopped
     networks:
-      - lavalink-net
+      - rpmtw-net
   rpmtw_discord_bot:
     build:
       dockerfile: docker/deploy.dockerfile
@@ -16,12 +16,10 @@ services:
       - .env
     volumes:
       - ./data:/data
-    container_name: rpmtw-discord-bot
-    depends_on:
-      - lavalink
-
+    restart: unless-stopped
     networks:
-      - lavalink-net
+      - rpmtw-net
 
 networks:
-  lavalink-net:
+  rpmtw-net:
+    driver: bridge

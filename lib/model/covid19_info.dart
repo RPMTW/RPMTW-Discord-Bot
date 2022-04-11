@@ -45,7 +45,7 @@ class Covid19Info extends HiveObject {
     List<int> keys = box.keys.map((e) => int.parse(e.toString())).toList()
       ..sort();
 
-    return box.get(keys.last);
+    return box.get(keys.last.toString());
   }
 
   Covid19Info({
