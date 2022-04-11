@@ -25,8 +25,9 @@ class MusicHandler {
   static Future<void> init() async {
     _cluster = ICluster.createCluster(dcClient, dcClient.self.id);
 
-    // https://lavalink-list.darrennathanael.com/NoSSL/lavalink-without-ssl/
     try {
+      /// Wait for the lavalink server to be ready
+      await Future.delayed(Duration(seconds: 5));
       await _cluster.addNode(NodeOptions(host: 'lavalink'));
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();

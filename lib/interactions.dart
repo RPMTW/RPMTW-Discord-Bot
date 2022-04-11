@@ -249,12 +249,13 @@ class Interactions {
         for (final key in box.keys) {
           chefInfos[key] = box.get(key);
         }
-        List<MapEntry<String, int>> sorted = chefInfos.entries
-            .toList()
-            .map((e) => MapEntry(e.key, e.value))
-            .toList()
-          ..sort((a, b) => b.value.compareTo(a.value))
-          ..take(10);
+        List<MapEntry<String, int>> sorted = (chefInfos.entries
+                .toList()
+                .map((e) => MapEntry(e.key, e.value))
+                .toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(10)
+            .toList();
 
         for (final MapEntry<String, int> entry in sorted) {
           int index = sorted.indexOf(entry) + 1;

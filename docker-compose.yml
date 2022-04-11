@@ -1,13 +1,11 @@
 version: "3.9"
 services:
   lavalink:
+    container_name: lavalink
     build:
       dockerfile: docker/lavalink.dockerfile
       context: .
-    hostname: lavalink
     restart: unless-stopped
-    networks:
-      - rpmtw-net
   rpmtw_discord_bot:
     build:
       dockerfile: docker/deploy.dockerfile
@@ -17,9 +15,6 @@ services:
     volumes:
       - ./data:/data
     restart: unless-stopped
-    networks:
-      - rpmtw-net
-
-networks:
-  rpmtw-net:
-    driver: bridge
+    depends_on:
+      lavalink:
+        condition: service_started
