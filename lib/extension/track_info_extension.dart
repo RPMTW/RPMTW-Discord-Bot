@@ -13,21 +13,24 @@ extension ITrackInfoExtension on ITrackInfo {
     embed.title = title;
     embed.url = uri;
     embed.addField(name: '歌曲創作者', content: author, inline: true);
-    embed.addField(
-        name: '歌曲長度',
-        content: RPMTWUtil.formatDuration(Duration(milliseconds: length),
-            i18nDay: "天", i18nHour: "小時", i18nMinute: "分鐘", i18nSecond: "秒"),
-        inline: true);
 
-    if (progressBar) {
-      MusicInfo info = MusicHandler.getInfo();
-
-      _ProgressBar bar = _progressBar(info.position, length);
-
+    if (!stream) {
       embed.addField(
-          name: '播放進度',
-          content:
-              "${bar.text} (${(bar.percentage * 100).toStringAsFixed(2)}%)");
+          name: '歌曲長度',
+          content: RPMTWUtil.formatDuration(Duration(milliseconds: length),
+              i18nDay: "天", i18nHour: "小時", i18nMinute: "分鐘", i18nSecond: "秒"),
+          inline: true);
+
+      if (progressBar) {
+        MusicInfo info = MusicHandler.getInfo();
+
+        _ProgressBar bar = _progressBar(info.position, length);
+
+        embed.addField(
+            name: '播放進度',
+            content:
+                "${bar.text} (${(bar.percentage * 100).toStringAsFixed(2)}%)");
+      }
     }
 
     if (isYoutube) {

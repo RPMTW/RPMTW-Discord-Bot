@@ -36,7 +36,7 @@ class MusicHandler {
 
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();
-      
+
       logger.info('Connected to lavalink.');
     } catch (e) {
       logger.warn('Failed to connect to Lavalink node.');
@@ -51,7 +51,7 @@ class MusicHandler {
       final List<IQueuedTrack> queue = getOrCreatePlayer().queue;
 
       /// If all tracks have ended, leave channel
-      if (queue.isEmpty && event.reason == "FINISHED") {
+      if (queue.isEmpty) {
         await leave();
       }
     });
