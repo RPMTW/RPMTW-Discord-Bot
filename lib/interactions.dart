@@ -17,14 +17,14 @@ import 'package:rpmtw_discord_bot/model/music_result.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 class Interactions {
-  static final String _searchMusicSelectId = 'search_music_result';
+  static final String _playMusicSelectId = 'query_music_result';
 
   static SlashCommandBuilder get hello {
     SlashCommandBuilder _cmd =
         SlashCommandBuilder('hello', '跟你打招呼', [], guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
-        String userTag = event.interaction.userAuthor!.tag;
+        final String userTag = event.interaction.userAuthor!.tag;
         await event.respond(MessageBuilder.content('嗨，$userTag ！'));
       } catch (e, stackTrace) {
         await logger.error(error: e, stackTrace: stackTrace);
@@ -45,7 +45,7 @@ class Interactions {
     _cmd.registerHandler((event) async {
       try {
         await event.acknowledge();
-        String? filter = event.interaction.getArg('filter');
+        final String? filter = event.interaction.getArg('filter');
 
         RPMTWApiClient apiClient = RPMTWApiClient.instance;
         List<MinecraftMod> mods =
@@ -87,10 +87,10 @@ class Interactions {
     _cmd.registerHandler((event) async {
       await event.acknowledge();
       try {
-        String uuid = event.getArg('uuid').value;
+        final String uuid = event.interaction.getArg('uuid');
 
-        RPMTWApiClient apiClient = RPMTWApiClient.instance;
-        MinecraftMod mod =
+        final RPMTWApiClient apiClient = RPMTWApiClient.instance;
+        final MinecraftMod mod =
             await apiClient.minecraftResource.getMinecraftMod(uuid);
 
         ComponentMessageBuilder componentMessageBuilder =
@@ -139,8 +139,6 @@ class Interactions {
         guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
-        INyxxWebsocket client = event.client as INyxxWebsocket;
-
         String getMemoryUsage() {
           final current =
               (ProcessInfo.currentRss / 1024 / 1024).toStringAsFixed(2);
@@ -148,13 +146,13 @@ class Interactions {
           return '$current/${rss}MB';
         }
 
-        DateTime now = RPMTWUtil.getUTCTime();
-        DateTime start = client.startTime;
+        final DateTime now = RPMTWUtil.getUTCTime();
+        final DateTime start = dcClient.startTime;
 
         EmbedBuilder embed = EmbedBuilder();
         embed.addAuthor((author) {
-          author.name = client.self.tag;
-          author.iconUrl = client.self.avatarURL();
+          author.name = dcClient.self.tag;
+          author.iconUrl = dcClient.self.avatarURL();
           author.url = 'https://github.com/RPMTW/RPMTW-Discord-Bot';
         });
         embed.addField(
@@ -162,17 +160,18 @@ class Interactions {
         embed.addField(
             name: '記憶體用量 (目前使用量/常駐記憶體大小)', content: getMemoryUsage());
         embed.addField(
-            name: '使用者快取', content: client.users.length, inline: true);
+            name: '使用者快取', content: dcClient.users.length, inline: true);
         embed.addField(
-            name: '頻道快取', content: client.channels.length, inline: true);
+            name: '頻道快取', content: dcClient.channels.length, inline: true);
         embed.addField(
             name: '訊息快取',
-            content: client.channels.values
+            content: dcClient.channels.values
                 .whereType<ITextChannel>()
                 .map((e) => e.messageCache.length)
                 .fold(0, (first, second) => (first as int) + second),
             inline: true);
-        embed.addField(name: 'Shard 數量', content: client.shards, inline: true);
+        embed.addField(
+            name: 'Shard 數量', content: dcClient.shards, inline: true);
 
         await event.respond(MessageBuilder.embed(embed));
       } catch (e, stackTrace) {
@@ -308,10 +307,10 @@ class Interactions {
     return _cmd;
   }
 
-  static SlashCommandBuilder get search {
+  static SlashCommandBuilder get play {
     SlashCommandBuilder _cmd = SlashCommandBuilder(
-        'search',
-        '搜尋來自 Youtube/Youtube Music/SoundCloud 等平台的歌曲並加入隊列',
+        'play',
+        '播放來自 Youtube/Youtube Music/SoundCloud 等平台的歌曲並加入隊列',
         [
           CommandOptionBuilder(CommandOptionType.string, 'query', '歌曲名稱或網址',
               required: true),
@@ -346,8 +345,7 @@ class Interactions {
             MusicSearchPlatform.values.firstWhere((e) => e.id == _platformId);
         final String query = event.interaction.getArg('query');
 
-        final MusicResult result =
-            await MusicHandler.search(query, platform);
+        final MusicResult result = await MusicHandler.search(query, platform);
         final List<ITrackInfo> infos = result.infos;
 
         if (result.isPlaylist) {
@@ -356,9 +354,9 @@ class Interactions {
               '已將 `${result.playlistInfo!.name}` 播放清單加入隊列。'));
         } else if (infos.length > 1) {
           MultiselectBuilder selectBuilder =
-              MultiselectBuilder(_searchMusicSelectId)
+              MultiselectBuilder(_playMusicSelectId)
                 ..minValues = 1
-                ..maxValues = infos.length < 20 ? infos.length : 20;
+                ..maxValues = infos.length;
 
           for (final ITrackInfo info in infos) {
             final List<int> titleCodeUnits = info.title.codeUnits;
@@ -537,29 +535,25 @@ class Interactions {
         SlashCommandBuilder('queue', '查看歌曲隊列', [], guild: rpmtwDiscordServerID);
     _cmd.registerHandler((event) async {
       try {
-        final IGuildPlayer player = MusicHandler.getOrCreatePlayer();
-        final List<IQueuedTrack> queuedTracks = player.queue;
+        final List<IQueuedTrack> queuedTracks =
+            MusicHandler.getOrCreatePlayer().queue;
 
         if (queuedTracks.isEmpty) {
           return await event.respond(MessageBuilder.content('歌曲隊列為空。'));
         }
 
-        List<EmbedBuilder> embeds = [];
         final IUser user =
             await event.interaction.memberAuthor?.user.getOrDownload() ??
                 event.interaction.userAuthor!;
 
-        final List<ITrack> tracks = (queuedTracks
+        final List<ITrackInfo> tracks = (queuedTracks
               ..retainWhere((e) => e.track.info != null))
-            .map((e) => e.track)
+            .map((e) => e.track.info!)
             .toList();
 
-        for (final ITrack track in tracks) {
-          embeds.add(track.info!.generateEmbed());
-        }
+        final MusicResult result = MusicResult(tracks, null);
 
-        final paginator =
-            MusicQueuePage(event.interactions, embeds, tracks, user);
+        final paginator = MusicQueuePage(event.interactions, result, user);
 
         return await event.respond(paginator.initMessageBuilder());
       } catch (e, stackTrace) {
@@ -626,7 +620,7 @@ class Interactions {
 
     /// Music
     interactions.registerSlashCommand(join);
-    interactions.registerSlashCommand(search);
+    interactions.registerSlashCommand(play);
     interactions.registerSlashCommand(leave);
     interactions.registerSlashCommand(pause);
     interactions.registerSlashCommand(resume);
@@ -640,7 +634,7 @@ class Interactions {
 
     /// Handlers
     interactions.registerMultiselectHandler(
-        _searchMusicSelectId, _musicSearchSelectHandler);
+        _playMusicSelectId, _musicSearchSelectHandler);
 
     interactions.syncOnReady();
   }

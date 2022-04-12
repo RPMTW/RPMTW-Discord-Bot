@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
@@ -33,13 +31,14 @@ class MusicHandler {
     try {
       /// Waiting for the lavalink server to be ready
       logger.info('Connecting to lavalink...');
-      await Future.delayed(Duration(seconds: 8));
+      await Future.delayed(Duration(seconds: 10));
       await _cluster.addNode(NodeOptions());
+      logger.info('Connected to lavalink.');
 
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();
-    } on SocketException {
-      logger.warn('Failed to connect to Lavalink node');
+    } catch (e) {
+      logger.warn('Failed to connect to Lavalink node.');
     }
     eventHandler();
   }
@@ -68,17 +67,18 @@ class MusicHandler {
         position: _playingPosition ?? 0, nowPlaying: player.nowPlaying);
   }
 
-  static Future<IPlayParameters> playByIdentifier(String identifier) async {
+  static Future<IPlayParameters> playByIdentifier(String identifier,
+      {bool force = false}) async {
     final ITrack? track = _cacheTracks[identifier];
 
     if (track != null) {
-      return play(track);
+      return play(track, force: force);
     } else {
       throw Exception('Track not found in cache');
     }
   }
 
-  static IPlayParameters play(ITrack track, {bool forces = false}) {
+  static IPlayParameters play(ITrack track, {bool force = false}) {
     final INode node = getNode();
     IPlayParameters parameters = node.play(
       rpmtwDiscordServerID,
@@ -87,7 +87,7 @@ class MusicHandler {
       channelId: _playingChannel?.id,
     );
 
-    if (forces) {
+    if (force) {
       node.stop(rpmtwDiscordServerID);
       parameters.startPlaying();
     } else {
@@ -139,6 +139,25 @@ class MusicHandler {
     }
   }
 
+  static Future<MusicResult> search(
+      String query, MusicSearchPlatform platform) async {
+    final INode node = getNode();
+    final ITracks results =
+        await node.autoSearch(query, platform: platform.platform);
+
+    final List<ITrack> tracks = results.tracks
+      ..retainWhere((e) => e.info != null);
+
+    for (final ITrack track in tracks) {
+      _cacheTracks[track.info!.identifier] = track;
+    }
+
+    final List<ITrackInfo> infos = tracks.map((e) => e.info!).take(25).toList();
+
+    return MusicResult(
+        infos, results.playlistInfo.name != null ? results.playlistInfo : null);
+  }
+
   static Future<void> leave() async {
     if (!isPlaying()) {
       return;
@@ -171,24 +190,5 @@ class MusicHandler {
 
   static void disconnect() async {
     getNode().disconnect();
-  }
-
-  static Future<MusicResult> search(
-      String query, MusicSearchPlatform platform) async {
-    final INode node = getNode();
-    final ITracks results =
-        await node.autoSearch(query, platform: platform.platform);
-
-    final List<ITrack> tracks = results.tracks
-      ..retainWhere((e) => e.info != null);
-
-    for (final ITrack track in tracks) {
-      _cacheTracks[track.info!.identifier] = track;
-    }
-
-    final List<ITrackInfo> infos = tracks.map((e) => e.info!).take(25).toList();
-
-    return MusicResult(
-        infos, results.playlistInfo.name != null ? results.playlistInfo : null);
   }
 }
