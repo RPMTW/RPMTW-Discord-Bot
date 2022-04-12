@@ -32,11 +32,12 @@ class MusicHandler {
       /// Waiting for the lavalink server to be ready
       logger.info('Connecting to lavalink...');
       await Future.delayed(Duration(seconds: 10));
-      await _cluster.addNode(NodeOptions());
-      logger.info('Connected to lavalink.');
+      await _cluster.addNode(NodeOptions(host: 'lavalink'));
 
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();
+      
+      logger.info('Connected to lavalink.');
     } catch (e) {
       logger.warn('Failed to connect to Lavalink node.');
     }
