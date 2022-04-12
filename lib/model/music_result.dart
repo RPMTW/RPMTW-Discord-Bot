@@ -1,11 +1,10 @@
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 
-class MusicSearchResult {
-  /// Max: 25
-  final List<ITrackInfo> trackInfos;
+class MusicResult {
+  final List<ITrackInfo> infos;
   final IPlaylistInfo? playlistInfo;
 
-  const MusicSearchResult(this.trackInfos, this.playlistInfo);
+  const MusicResult(this.infos, this.playlistInfo);
 
   bool get isPlaylist => playlistInfo != null;
 }

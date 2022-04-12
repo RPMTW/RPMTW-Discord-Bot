@@ -76,7 +76,7 @@ class Covid19Handler {
   static Future<_Covid19FetchStatus> _save() async {
     Covid19Info info = await fetch();
     Box box = Data.covid19Box;
-    bool duplicate = info.yesterday.lastUpdatedString == info.lastUpdatedString;
+    bool duplicate = info.getYesterdayInfo()?.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);

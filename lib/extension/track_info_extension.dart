@@ -2,8 +2,12 @@ import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
+import 'package:rpmtw_discord_bot/model/music_info.dart';
 
 extension ITrackInfoExtension on ITrackInfo {
+  Uri get _uri => Uri.parse(uri);
+  bool get isYoutube => _uri.host == 'www.youtube.com';
+
   EmbedBuilder generateEmbed({bool progressBar = false}) {
     EmbedBuilder embed = EmbedBuilder();
     embed.title = title;
@@ -16,11 +20,19 @@ extension ITrackInfoExtension on ITrackInfo {
         inline: true);
 
     if (progressBar) {
-      int? _position = MusicHandler.getPlayingPosition();
+      MusicInfo info = MusicHandler.getInfo();
 
-      _ProgressBar bar = _progressBar(_position ?? 0, length);
+      _ProgressBar bar = _progressBar(info.position, length);
 
-      embed.addField(name: '播放進度', content: "${bar.text} (${(bar.percentage * 100).toStringAsFixed(2)}%)");
+      embed.addField(
+          name: '播放進度',
+          content:
+              "${bar.text} (${(bar.percentage * 100).toStringAsFixed(2)}%)");
+    }
+
+    if (isYoutube) {
+      embed.imageUrl =
+          'https://img.youtube.com/vi/${_uri.queryParameters['v']}/0.jpg';
     }
 
     embed.timestamp = RPMTWUtil.getUTCTime();
@@ -33,16 +45,16 @@ extension ITrackInfoExtension on ITrackInfo {
 
     final double percentage = value / maxValue;
 
-    final int progress = (size * percentage)
-        .toInt(); // Calculate the number of square characters to fill the progress side.
-    final int emptyProgress = size -
-        progress; // Calculate the number of dash characters to fill the empty progress side.
+    // Calculate the number of square characters to fill the progress side.
+    final int progress = (size * percentage).toInt();
+
+    // Calculate the number of dash characters to fill the empty progress side.
+    final int emptyProgress = size - progress;
 
     final String progressText = "▇" * progress;
     final String emptyProgressText = "—" * emptyProgress;
 
-    return _ProgressBar(
-        percentage, progressText + emptyProgressText); // Creating the bar
+    return _ProgressBar(percentage, progressText + emptyProgressText);
   }
 }
 

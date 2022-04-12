@@ -13,7 +13,7 @@ import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/model/music_queue_page.dart';
 import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
-import 'package:rpmtw_discord_bot/model/music_search_result.dart';
+import 'package:rpmtw_discord_bot/model/music_result.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 class Interactions {
@@ -346,9 +346,9 @@ class Interactions {
             MusicSearchPlatform.values.firstWhere((e) => e.id == _platformId);
         final String query = event.interaction.getArg('query');
 
-        final MusicSearchResult result =
+        final MusicResult result =
             await MusicHandler.search(query, platform);
-        final List<ITrackInfo> infos = result.trackInfos;
+        final List<ITrackInfo> infos = result.infos;
 
         if (result.isPlaylist) {
           infos.map((e) => e.identifier).forEach(MusicHandler.playByIdentifier);

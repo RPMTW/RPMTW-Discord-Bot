@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
+import 'package:rpmtw_discord_bot/model/music_info.dart';
 import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
-import 'package:rpmtw_discord_bot/model/music_search_result.dart';
+import 'package:rpmtw_discord_bot/model/music_result.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
 
 class MusicHandler {
@@ -32,7 +33,7 @@ class MusicHandler {
     try {
       /// Waiting for the lavalink server to be ready
       logger.info('Connecting to lavalink...');
-      await Future.delayed(Duration(seconds: 10));
+      await Future.delayed(Duration(seconds: 8));
       await _cluster.addNode(NodeOptions());
 
       await Future.delayed(Duration(seconds: 2));
@@ -60,7 +61,12 @@ class MusicHandler {
     });
   }
 
-  static int? getPlayingPosition() => _playingPosition;
+  static MusicInfo getInfo() {
+    IGuildPlayer player = getOrCreatePlayer();
+
+    return MusicInfo(
+        position: _playingPosition ?? 0, nowPlaying: player.nowPlaying);
+  }
 
   static Future<IPlayParameters> playByIdentifier(String identifier) async {
     final ITrack? track = _cacheTracks[identifier];
@@ -167,7 +173,7 @@ class MusicHandler {
     getNode().disconnect();
   }
 
-  static Future<MusicSearchResult> search(
+  static Future<MusicResult> search(
       String query, MusicSearchPlatform platform) async {
     final INode node = getNode();
     final ITracks results =
@@ -182,7 +188,7 @@ class MusicHandler {
 
     final List<ITrackInfo> infos = tracks.map((e) => e.info!).take(25).toList();
 
-    return MusicSearchResult(
+    return MusicResult(
         infos, results.playlistInfo.name != null ? results.playlistInfo : null);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:hive/hive.dart';
 import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
@@ -40,12 +42,13 @@ class Covid19Info extends HiveObject {
   @HiveField(9)
   final String lastUpdatedString;
 
-  Covid19Info get yesterday {
+  Covid19Info? getYesterdayInfo() {
     Box box = Data.covid19Box;
-    List<int> keys = box.keys.map((e) => int.parse(e.toString())).toList()
-      ..sort();
 
-    return box.get(keys.last.toString());
+    /// Get the biggest timestamp.
+    int key = box.keys.map((e) => int.parse(e.toString())).toList().reduce(max);
+
+    return box.get(key);
   }
 
   Covid19Info({
@@ -63,7 +66,7 @@ class Covid19Info extends HiveObject {
 
   EmbedBuilder generateEmbed() {
     final DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
-    final Covid19Info? _yesterday = yesterday;
+    final Covid19Info? _yesterday = getYesterdayInfo();
 
     final bool outbreak = confirmed > (_yesterday?.confirmed ?? 0);
     final bool localOutbreak =
