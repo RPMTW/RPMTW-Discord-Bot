@@ -281,7 +281,7 @@ class Interactions {
     _cmd.registerHandler((event) async {
       try {
         await event.acknowledge();
-        Covid19Info info = await Covid19Handler.latest();
+        Covid19Info info = await Covid19Handler.getLatest();
 
         return await event.respond(MessageBuilder.embed(info.generateEmbed()));
       } catch (e, stackTrace) {

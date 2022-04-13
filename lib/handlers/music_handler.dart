@@ -38,10 +38,11 @@ class MusicHandler {
       getOrCreatePlayer();
 
       logger.info('Connected to lavalink.');
+      
+      eventHandler();
     } catch (e) {
       logger.warn('Failed to connect to Lavalink node.');
     }
-    eventHandler();
   }
 
   static void eventHandler() {

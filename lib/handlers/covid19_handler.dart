@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +15,7 @@ class Covid19Handler {
   static const String _url =
       'https://news.campaign.yahoo.com.tw/2019-nCoV/taiwancase.php';
 
-  static Future<Covid19Info> fetch() async {
+  static Future<Covid19Info> _fetch() async {
     http.Response response = await http.get(Uri.parse(_url));
     String html = response.body;
 
@@ -74,9 +75,11 @@ class Covid19Handler {
   }
 
   static Future<_Covid19FetchStatus> _save() async {
-    Covid19Info info = await fetch();
+    Covid19Info info = await _fetch();
     Box box = Data.covid19Box;
-    bool duplicate = info.getYesterdayInfo()?.lastUpdatedString == info.lastUpdatedString;
+
+    bool duplicate =
+        getYesterday()?.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
@@ -85,7 +88,7 @@ class Covid19Handler {
     return _Covid19FetchStatus(info, duplicate);
   }
 
-  static Future<Covid19Info> latest() async {
+  static Future<Covid19Info> getLatest() async {
     Box box = Data.covid19Box;
     if (box.isEmpty) {
       return (await _save()).info;
@@ -102,10 +105,20 @@ class Covid19Handler {
     }
   }
 
+  static Covid19Info? getYesterday() {
+    Box box = Data.covid19Box;
+
+    /// Get the biggest timestamp.
+    int key = box.keys.map((e) => int.parse(e)).toList().reduce(max);
+
+    return box.get(key.toString());
+  }
+
   static void timer() {
     Timer.periodic(Duration(minutes: 1), (timer) async {
       /// UTC+8 (Taipei Time)
-      DateTime now = dateTimeToOffset(offset: 8, datetime: RPMTWUtil.getUTCTime());
+      DateTime now =
+          dateTimeToOffset(offset: 8, datetime: RPMTWUtil.getUTCTime());
 
       /// 中央流行疫情指揮中心通常在每天的下午兩點或三點公佈 Covid-19 疫情狀況
       bool enable = (now.hour == 14 && now.minute > 12) || now.hour == 15;

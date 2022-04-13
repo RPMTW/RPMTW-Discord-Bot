@@ -1,12 +1,9 @@
-import 'dart:math';
-
 import 'package:hive/hive.dart';
 import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
-
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
 
 part 'covid19_info.g.dart';
 
@@ -42,15 +39,6 @@ class Covid19Info extends HiveObject {
   @HiveField(9)
   final String lastUpdatedString;
 
-  Covid19Info? getYesterdayInfo() {
-    Box box = Data.covid19Box;
-
-    /// Get the biggest timestamp.
-    int key = box.keys.map((e) => int.parse(e.toString())).toList().reduce(max);
-
-    return box.get(key);
-  }
-
   Covid19Info({
     required this.confirmed,
     required this.localConfirmed,
@@ -66,7 +54,7 @@ class Covid19Info extends HiveObject {
 
   EmbedBuilder generateEmbed() {
     final DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
-    final Covid19Info? _yesterday = getYesterdayInfo();
+    final Covid19Info? _yesterday = Covid19Handler.getYesterday();
 
     final bool outbreak = confirmed > (_yesterday?.confirmed ?? 0);
     final bool localOutbreak =
