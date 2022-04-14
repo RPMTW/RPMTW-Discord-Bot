@@ -108,10 +108,20 @@ class Covid19Handler {
   static Covid19Info? getYesterday() {
     Box box = Data.covid19Box;
     try {
-      /// Get the biggest timestamp.
-      int key = box.keys.map((e) => int.parse(e)).toList().reduce(max);
+      List<int> keys = box.keys.map((e) => int.parse(e)).toList();
 
-      return box.get(key.toString());
+      /// Get the max timestamp.
+      int maxTimestamp = keys.reduce(max);
+
+      int timestamp;
+
+      if (keys.length == 1) {
+        timestamp = maxTimestamp;
+      } else {
+        timestamp = keys[keys.indexOf(maxTimestamp) - 1];
+      }
+
+      return box.get(timestamp.toString());
     } on StateError {
       return null;
     }
