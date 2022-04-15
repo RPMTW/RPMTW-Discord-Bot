@@ -214,7 +214,8 @@ class Interactions {
           return;
         }
 
-        final String message = event.interaction.getArg('message') ?? '好電！';
+        final String message =
+            '好電！${event.interaction.getArg('message') ?? ''}';
         int count;
         if (box.containsKey(userID)) {
           int _count = box.get(userID);

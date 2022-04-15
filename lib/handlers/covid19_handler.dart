@@ -74,12 +74,12 @@ class Covid19Handler {
         lastUpdated: RPMTWUtil.getUTCTime());
   }
 
-  static Future<_Covid19FetchStatus> _save() async {
+  static Future<_Covid19FetchStatus> _fetchAndSave() async {
     Covid19Info info = await _fetch();
     Box box = Data.covid19Box;
 
     bool duplicate =
-        getYesterday()?.lastUpdatedString == info.lastUpdatedString;
+        (await getLatest()).lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
@@ -91,14 +91,18 @@ class Covid19Handler {
   static Future<Covid19Info> getLatest() async {
     Box box = Data.covid19Box;
     if (box.isEmpty) {
-      return (await _save()).info;
+      return (await _fetchAndSave()).info;
     } else {
       List<int> timeList = box.keys.map((e) => int.parse(e)).toList()..sort();
 
-      int lastUpdated = timeList.last;
-      Covid19Info info = box.get(lastUpdated.toString());
-      if (info.lastUpdated.difference(RPMTWUtil.getUTCTime()).inDays > 1) {
-        return (await _save()).info;
+      final int lastUpdated = timeList.last;
+      final Covid19Info info = box.get(lastUpdated.toString());
+      final Duration difference =
+          RPMTWUtil.getUTCTime().difference(info.lastUpdated);
+
+      // Only update info if the difference is greater than 1 day and 30 minutes
+      if (difference.inDays >= 1 && difference.inMinutes >= 30) {
+        return (await _fetchAndSave()).info;
       } else {
         return info;
       }
@@ -137,7 +141,7 @@ class Covid19Handler {
       bool enable = (now.hour == 14 && now.minute > 12) || now.hour == 15;
       if (enable) {
         try {
-          _Covid19FetchStatus status = await _save();
+          _Covid19FetchStatus status = await _fetchAndSave();
 
           if (!status.duplicate) {
             ITextChannel channel =
