@@ -15,7 +15,7 @@ class Covid19Handler {
   static const String _url =
       'https://news.campaign.yahoo.com.tw/2019-nCoV/taiwancase.php';
 
-  static Future<Covid19Info> _fetch() async {
+  static Future<Covid19Info> fetch() async {
     http.Response response = await http.get(Uri.parse(_url));
     String html = response.body;
 
@@ -75,11 +75,10 @@ class Covid19Handler {
   }
 
   static Future<_Covid19FetchStatus> _fetchAndSave() async {
-    Covid19Info info = await _fetch();
+    Covid19Info info = await fetch();
     Box box = Data.covid19Box;
 
-    bool duplicate =
-        (await getLatest()).lastUpdatedString == info.lastUpdatedString;
+    bool duplicate = _getLatest()?.lastUpdatedString == info.lastUpdatedString;
 
     if (!duplicate) {
       await box.put(info.lastUpdated.millisecondsSinceEpoch.toString(), info);
@@ -89,14 +88,10 @@ class Covid19Handler {
   }
 
   static Future<Covid19Info> getLatest() async {
-    Box box = Data.covid19Box;
-    if (box.isEmpty) {
+    Covid19Info? info = _getLatest();
+    if (info == null) {
       return (await _fetchAndSave()).info;
     } else {
-      List<int> timeList = box.keys.map((e) => int.parse(e)).toList()..sort();
-
-      final int lastUpdated = timeList.last;
-      final Covid19Info info = box.get(lastUpdated.toString());
       final Duration difference =
           RPMTWUtil.getUTCTime().difference(info.lastUpdated);
 
@@ -106,6 +101,18 @@ class Covid19Handler {
       } else {
         return info;
       }
+    }
+  }
+
+  static Covid19Info? _getLatest() {
+    Box box = Data.covid19Box;
+    if (box.isEmpty) {
+      return null;
+    } else {
+      List<int> timeList = box.keys.map((e) => int.parse(e)).toList()..sort();
+
+      final int lastUpdated = timeList.last;
+      return box.get(lastUpdated.toString());
     }
   }
 
