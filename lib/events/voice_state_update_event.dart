@@ -25,12 +25,14 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
         } else if (channel != null &&
             channel.id == voiceChannelID &&
             !user.bot) {
-          final ChannelBuilder newVoiceChannel = _VoiceChannelBuilder.create(
-              '${user.username}的頻道',
-              permissionOverwrites: [
-                PermissionOverrideBuilder(1, user.id)..manageRoles = true
-              ],
-              parent: categoryID);
+          final ChannelBuilder newVoiceChannel =
+              _VoiceChannelBuilder.create('${user.username}的頻道',
+                  permissionOverwrites: [
+                    PermissionOverrideBuilder(1, user.id)
+                      ..manageRoles = true
+                      ..manageChannels = true
+                  ],
+                  parent: categoryID);
 
           final IVoiceGuildChannel guildChannel =
               await guild.createChannel(newVoiceChannel) as IVoiceGuildChannel;
