@@ -28,9 +28,13 @@ class VoiceStateUpdateEvent implements BaseEvent<IVoiceStateUpdateEvent> {
           final ChannelBuilder newVoiceChannel =
               _VoiceChannelBuilder.create('${user.username}的頻道',
                   permissionOverwrites: [
-                    PermissionOverrideBuilder(1, user.id)
+                    PermissionOverrideBuilder.of(user)
                       ..manageRoles = true
-                      ..manageChannels = true
+                      ..manageChannels = true,
+                    PermissionOverrideBuilder.of(guild.everyoneRole)
+                      ..prioritySpeaker = true,
+                    PermissionOverrideBuilder.of(dcClient.self)
+                      ..prioritySpeaker = false
                   ],
                   parent: categoryID);
 
