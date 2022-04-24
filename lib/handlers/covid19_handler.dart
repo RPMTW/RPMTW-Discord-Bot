@@ -139,15 +139,18 @@ class Covid19Handler {
   }
 
   static void timer() {
+    bool fetching = false;
+
     Timer.periodic(Duration(minutes: 1), (timer) async {
       /// UTC+8 (Taipei Time)
       DateTime now =
           dateTimeToOffset(offset: 8, datetime: RPMTWUtil.getUTCTime());
 
       /// 中央流行疫情指揮中心通常在每天的下午兩點或三點公佈 Covid-19 疫情狀況
-      bool enable = (now.hour == 14 && now.minute > 12) || now.hour == 15;
-      if (enable) {
+      bool enable = (now.hour == 14 && now.minute > 5) || now.hour == 15;
+      if (enable && !fetching) {
         try {
+          fetching = true;
           _Covid19FetchStatus status = await _fetchAndSave();
 
           if (!status.duplicate) {
@@ -157,6 +160,7 @@ class Covid19Handler {
               ..content = '中央流行疫情指揮中心剛才發布了最新的疫情資訊囉！'
               ..embeds = [status.info.generateEmbed()]);
           }
+          fetching = false;
         } catch (e, stackTrace) {
           await logger.error(error: e, stackTrace: stackTrace);
         }
