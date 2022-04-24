@@ -38,7 +38,7 @@ class MusicHandler {
       getOrCreatePlayer();
 
       logger.info('Connected to lavalink.');
-      
+
       eventHandler();
     } catch (e) {
       logger.warn('Failed to connect to Lavalink node.');
@@ -107,7 +107,7 @@ class MusicHandler {
     bool isAdmin = (await member.effectivePermissions).administrator;
     IChannel? channel = await member.voiceState?.channel?.getOrDownload();
 
-    return channel != null && (member.id == _playingMember?.id || isAdmin);
+    return isAdmin || (member.id == _playingMember?.id && channel != null);
   }
 
   static void join(IVoiceGuildChannel channel, IMember member) {

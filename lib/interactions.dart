@@ -336,6 +336,11 @@ class Interactions {
               .respond(MessageBuilder.content('請先連線語音頻道，才能使用此功能。'));
         }
 
+        final bool hasPermission = await MusicHandler.hasPermission(member);
+        if (!hasPermission) {
+          return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+        }
+
         if (!MusicHandler.isPlaying()) {
           await MusicHandler.joinWithCommand(event, onlyJoin: false);
         }
@@ -594,6 +599,12 @@ class Interactions {
   static Future<void> _musicSearchSelectHandler(
       IMultiselectInteractionEvent event) async {
     await event.acknowledge();
+    final IMember member = event.interaction.memberAuthor!;
+    final bool hasPermission = await MusicHandler.hasPermission(member);
+
+    if (!hasPermission) {
+      return await event.respond(MessageBuilder.content('您沒有權限使用此功能。'));
+    }
 
     final List<String> identifiers = event.interaction.values;
     identifiers.forEach(MusicHandler.playByIdentifier);
