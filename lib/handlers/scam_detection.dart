@@ -32,6 +32,7 @@ class ScamDetection {
         'discordapp.net',
         'discordstatus.com',
         'discord.media',
+        'cdn.discordapp.com',
 
         /// Discord 社群域名
         'discordresources.com',
