@@ -30,15 +30,15 @@ class Covid19Handler {
     }
 
     int _parseField(int index, bool isTitle) {
-      Element _element =
+      Element dlElement =
           document.getElementsByTagName('dl').first.children[index];
 
       Element element;
 
       if (isTitle) {
-        element = _element.getElementsByClassName('num').first;
+        element = dlElement.getElementsByClassName('num').first;
       } else {
-        element = _element.getElementsByTagName('p').first;
+        element = dlElement.getElementsByTagName('p').first;
       }
 
       return _parseInt(element.text);

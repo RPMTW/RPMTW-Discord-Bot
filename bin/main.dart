@@ -1,4 +1,3 @@
-import 'package:dotenv/dotenv.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/events.dart';
 import 'package:rpmtw_discord_bot/handlers/bot_stop_handler.dart';
@@ -6,6 +5,7 @@ import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
 //import 'package:rpmtw_discord_bot/handlers/cosmic_handler.dart';
 import 'package:rpmtw_discord_bot/interactions.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
+// ignore: depend_on_referenced_packages
 import 'package:logging/logging.dart' as logging;
 
 void main(List<String> arguments) async {
@@ -14,7 +14,7 @@ void main(List<String> arguments) async {
     logging.Logger.root.level = logging.Level.ALL;
   }
   INyxxWebsocket client = NyxxFactory.createNyxxWebsocket(
-    env['DISCORD_TOKEN']!,
+    Data.dotEnv['DISCORD_TOKEN']!,
     GatewayIntents.all,
     options: ClientOptions(),
   );

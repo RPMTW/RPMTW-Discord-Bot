@@ -7,12 +7,12 @@ environment:
   sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
-  dotenv: ^3.0.0
+  dotenv: ^4.0.1
   hive: ^2.1.0
   nyxx: ^3.4.2
   nyxx_commander: ^3.0.0
   nyxx_extensions: ^3.0.0
-  nyxx_interactions: ^4.1.0
+  nyxx_interactions: ^4.2.1
   nyxx_lavalink: ^3.0.1
   nyxx_pagination: ^2.2.0
   path: ^1.8.1
@@ -26,4 +26,4 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.1.8
   hive_generator: ^1.1.2
-  lints: ^1.0.0
+  lints: ^2.0.0

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:hive/hive.dart';
 import 'package:nyxx/nyxx.dart';
+// ignore: depend_on_referenced_packages
 import 'package:logging/logging.dart';
 import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
 

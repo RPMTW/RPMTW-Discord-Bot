@@ -54,14 +54,14 @@ class Covid19Info extends HiveObject {
 
   EmbedBuilder generateEmbed() {
     final DateTime time = dateTimeToOffset(offset: 8, datetime: lastUpdated);
-    final Covid19Info? _yesterday = Covid19Handler.getYesterday();
+    final Covid19Info? yesterday = Covid19Handler.getYesterday();
 
-    final bool outbreak = confirmed > (_yesterday?.confirmed ?? 0);
+    final bool outbreak = confirmed > (yesterday?.confirmed ?? 0);
     final bool localOutbreak =
-        localConfirmed > (_yesterday?.localConfirmed ?? 0);
+        localConfirmed > (yesterday?.localConfirmed ?? 0);
     final bool nonLocalOutbreak =
-        nonLocalConfirmed > (_yesterday?.nonLocalConfirmed ?? 0);
-    final bool deathOutbreak = death > (_yesterday?.death ?? 0);
+        nonLocalConfirmed > (yesterday?.nonLocalConfirmed ?? 0);
+    final bool deathOutbreak = death > (yesterday?.death ?? 0);
 
     final DateFormat dateFormat = DateFormat.yMMMMEEEEd('zh-TW').add_jms();
     final String upArrow = '⬆';

@@ -102,8 +102,8 @@ class ScamDetection {
     if (message.author.bot) return;
     final String messageContent = message.content;
     await detection(messageContent,
-        inBlackList: (_message, url) => _onPhishing(message, client, false),
-        unknownSuspiciousDomain: (_message, url) =>
+        inBlackList: (_, url) => _onPhishing(message, client, false),
+        unknownSuspiciousDomain: (_, url) =>
             _onPhishing(message, client, true));
 
     /*

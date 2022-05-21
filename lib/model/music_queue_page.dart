@@ -42,13 +42,14 @@ class MusicQueuePage extends ComponentPaginationAbstract {
     interactions.events.onButtonEvent
         .where((event) => event.interaction.customId == buttonId)
         .listen((event) async {
-      final ITrackInfo _track = result.infos[currentPage - 1];
-      MusicHandler.playByIdentifier(_track.identifier, force: true);
+      final ITrackInfo nowTrack = result.infos[currentPage - 1];
 
-      final MusicInfo _info = MusicHandler.getInfo();
+      MusicHandler.playByIdentifier(nowTrack.identifier, force: true);
+
+      final MusicInfo nowInfo = MusicHandler.getInfo();
 
       playButton.disabled =
-          _info.nowPlaying?.track.info?.identifier == _track.identifier;
+          nowInfo.nowPlaying?.track.info?.identifier == nowTrack.identifier;
 
       updatePage(currentPage, this.builder, event);
 

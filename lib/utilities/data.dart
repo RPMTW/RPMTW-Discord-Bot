@@ -27,12 +27,14 @@ late bool kDebugMode;
 class Data {
   static late final Box _chefBox;
   static late final Box _covid19Box;
+  static late final DotEnv _dotEnv;
 
   static Box get chefBox => _chefBox;
   static Box get covid19Box => _covid19Box;
+  static DotEnv get dotEnv => _dotEnv;
 
   static Future<void> init() async {
-    load();
+    _dotEnv = DotEnv(includePlatformEnvironment: true)..load();
     RPMTWApiClient.init();
     String path = absolute(Directory.current.path, 'data');
     Hive.init(path);
@@ -41,7 +43,7 @@ class Data {
     _covid19Box = await Hive.openBox('covid19Box');
     await initializeDateFormatting('zh-TW');
 
-    kDebugMode = env['DEBUG_MODE']?.toBool() ?? false;
+    kDebugMode = dotEnv['DEBUG_MODE']?.toBool() ?? false;
   }
 
   static Future<void> initOnReady(INyxxWebsocket client) async {
