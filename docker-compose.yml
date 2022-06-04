@@ -1,11 +1,11 @@
 version: "3.9"
 services:
-  lavalink:
-    container_name: lavalink
-    build:
-      dockerfile: docker/lavalink.dockerfile
-      context: .
-    restart: unless-stopped
+  # lavalink:
+  #   container_name: lavalink
+  #   build:
+  #     dockerfile: docker/lavalink.dockerfile
+  #     context: .
+  #   restart: unless-stopped
   rpmtw_discord_bot:
     container_name: rpmtw_discord_bot
     build:
@@ -16,6 +16,6 @@ services:
     volumes:
       - ./data:/data
     restart: unless-stopped
-    depends_on:
-      lavalink:
-        condition: service_started
+    # depends_on:
+    #   lavalink:
+    #     condition: service_started

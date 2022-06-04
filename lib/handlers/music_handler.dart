@@ -32,7 +32,12 @@ class MusicHandler {
       /// Waiting for the lavalink server to be ready
       logger.info('Connecting to lavalink...');
       await Future.delayed(Duration(seconds: 10));
-      await _cluster.addNode(NodeOptions(host: 'lavalink'));
+      // https://lavalink-list.darrennathanael.com/
+      await _cluster.addNode(NodeOptions(
+          host: 'lavalink.oops.wtf',
+          password: "www.freelavalink.ga",
+          port: 443,
+          ssl: true));
 
       await Future.delayed(Duration(seconds: 2));
       getOrCreatePlayer();
