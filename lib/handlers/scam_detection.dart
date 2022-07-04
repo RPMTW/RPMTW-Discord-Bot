@@ -39,6 +39,7 @@ class ScamDetection {
         'discord.wiki',
         'discordservers.tw',
         'discord.st',
+        'betterdiscord.app',
 
         // Steam 官方域名
         'steampowered.com',
@@ -125,7 +126,7 @@ class ScamDetection {
     await message.channel.sendMessage(messageBuilder);
     await message.delete();
     if (message.guild != null) {
-      IGuild guild = message.guild!.getFromCache()!;
+      IGuild guild = await message.guild!.getOrDownload();
       String reason =
           '違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。';
 
