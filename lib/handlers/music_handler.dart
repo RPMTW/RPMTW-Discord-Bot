@@ -4,7 +4,7 @@ import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:rpmtw_discord_bot/model/music_info.dart';
 import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
 import 'package:rpmtw_discord_bot/model/music_result.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 
 class MusicHandler {
   static final Map<String, ITrack> _cacheTracks = {};

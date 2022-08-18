@@ -9,7 +9,7 @@ import 'package:instant/instant.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 
 class Covid19Handler {
   static const String _url =
