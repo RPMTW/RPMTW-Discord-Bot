@@ -1,7 +1,4 @@
-// ignore_for_file: implementation_imports
 import 'package:nyxx/nyxx.dart';
-import 'package:nyxx/src/internal/http_endpoints.dart';
-import 'package:nyxx/src/internal/http/http_request.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 import 'package:rpmtw_discord_bot/data/phishing_link.dart';
 import 'package:rpmtw_discord_bot/utilities/data.dart';
@@ -126,25 +123,20 @@ class ScamDetection {
     await message.channel.sendMessage(messageBuilder);
     await message.delete();
     if (message.guild != null) {
-      IGuild guild = await message.guild!.getOrDownload();
-      String reason =
-          '違反 RPMTW Discord 伺服器規範第一條，不得以任何形式騷擾他人，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。';
+      final IGuild guild = await message.guild!.getOrDownload();
+      final String reason =
+          '違反 《RPMTW Discord 社群規範》第一條：「請尊重每個人，絕對禁止且不容忍騷擾、迫害、性別/種族歧視或仇恨言論」，散布不實詐騙訊息，如認為有誤判，請使用 Email 聯絡 rrt46777@gmail.com，並附上您的 Discord ID。';
+      final IMember member = await guild.fetchMember(author.id);
 
       if (suspicious) {
-        IMember member = await guild.fetchMember(author.id);
-
         /// Timeout member for 7 days
+        final timeUntil = RPMTWUtil.getUTCTime().add(Duration(days: 7));
         await member.edit(
-            builder: MemberBuilder()
-              ..timeoutUntil = RPMTWUtil.getUTCTime().add(Duration(days: 7)),
+            builder: MemberBuilder()..timeoutUntil = timeUntil,
             auditReason: reason);
       } else {
-        HttpEndpoints httpEndpoints = client.httpEndpoints as HttpEndpoints;
-
-        await httpEndpoints.executeSafe(BasicRequest(
-            '/guilds/${guild.id}/bans/${author.id}',
-            method: 'PUT',
-            body: {'delete-message-days': 1, 'reason': reason}));
+        await member.ban(
+            deleteMessageDays: 1, reason: reason, auditReason: reason);
       }
     }
     await logger.info(
