@@ -80,7 +80,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
 
 ▎備註
 
-RPMTW 社群的夥伴們都是很有善的 .w.
+RPMTW 社群的夥伴們都是很友善的 .w.
 
 PS: RPMTW 社群使用 Discord 的討論串機制，目的是可以區分話題，避免多個問題同時進行的時候被忽略或很亂。
 PS: 如果問題只是偏向討論性質，可以轉至其他頻道。
