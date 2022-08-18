@@ -1,0 +1,33 @@
+name: Analyze
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Dart
+        uses: actions/cache@v2
+        with:
+          path: /opt/hostedtoolcache/dart-sdk
+          key: ${{ runner.os }}-dart-2.17.6
+      # https://dart.dev/get-dart/archive
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: 2.17.6
+      - name: Install dependencies
+        run: |
+          dart pub get
+
+      - name: Dart analyze
+        uses: invertase/github-action-dart-analyzer@v1
+        with:
+          fatal-warnings: false
+          annotate: true
+          annotate-only: false
