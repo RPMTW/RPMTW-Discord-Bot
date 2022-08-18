@@ -4,7 +4,7 @@ import 'package:rpmtw_discord_bot/handlers/bot_stop_handler.dart';
 import 'package:rpmtw_discord_bot/handlers/covid19_handler.dart';
 //import 'package:rpmtw_discord_bot/handlers/cosmic_handler.dart';
 import 'package:rpmtw_discord_bot/interactions.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 // ignore: depend_on_referenced_packages
 import 'package:logging/logging.dart' as logging;
 

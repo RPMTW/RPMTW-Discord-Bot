@@ -1,7 +1,7 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_discord_bot/events/base_event.dart';
-import 'package:rpmtw_discord_bot/utilities/changelog.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/changelog.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 import 'package:rpmtw_discord_bot/handlers/scam_detection.dart';
 
 class MessageUpdateEvent implements BaseEvent<IMessageUpdateEvent> {

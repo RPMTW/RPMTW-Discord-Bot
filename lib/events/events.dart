@@ -4,7 +4,7 @@ import 'package:rpmtw_discord_bot/events/message_delete_event.dart';
 import 'package:rpmtw_discord_bot/events/message_update_event.dart';
 import 'package:rpmtw_discord_bot/events/ready_event.dart';
 import 'package:rpmtw_discord_bot/events/voice_state_update_event.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 
 class Events {
   static register(INyxxWebsocket client) {

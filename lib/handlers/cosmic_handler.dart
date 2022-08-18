@@ -1,6 +1,6 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 
 class CosmicChatHandler {
   static Future<void> init(INyxxWebsocket client) async {

@@ -14,7 +14,7 @@ import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/model/music_queue_page.dart';
 import 'package:rpmtw_discord_bot/model/music_search_platform.dart';
 import 'package:rpmtw_discord_bot/model/music_result.dart';
-import 'package:rpmtw_discord_bot/utilities/data.dart';
+import 'package:rpmtw_discord_bot/util/data.dart';
 
 class Interactions {
   static final String _playMusicSelectId = 'query_music_result';

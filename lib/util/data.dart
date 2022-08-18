@@ -8,7 +8,7 @@ import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
 import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
-import 'package:rpmtw_discord_bot/utilities/log.dart';
+import 'package:rpmtw_discord_bot/util/log.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
 
 final Snowflake rpmtwDiscordServerID = 815819580840607807.toSnowflake();
