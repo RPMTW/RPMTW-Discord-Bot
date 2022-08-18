@@ -27,7 +27,7 @@ class BotStopHandler extends BasePlugin {
 
     logger.info('Stopping lavalink...');
     await MusicHandler.leave();
-    MusicHandler.disconnect();
+    // MusicHandler.disconnect();
     logger.info('Stopped lavalink.');
   }
 }
