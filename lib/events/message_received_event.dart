@@ -54,7 +54,7 @@ class MessageReceivedEvent implements BaseEvent<IMessageReceivedEvent> {
 
     final String name = '${message.author.username} 詢問的問題討論串';
     final ThreadBuilder builder = ThreadBuilder(name)
-      ..archiveAfter = ThreadArchiveTime.week
+      ..archiveAfter = ThreadArchiveTime.day
       ..private = false;
 
     final IThreadChannel thread = await message.createAndGetThread(builder);
