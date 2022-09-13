@@ -12,7 +12,6 @@ dependencies:
   dotenv: ^4.0.1
   hive: ^2.1.0
   nyxx: ^4.0.0
-  nyxx_commander: ^3.0.0
   nyxx_interactions: ^4.3.1
   nyxx_lavalink: ^3.1.0
   nyxx_pagination: ^2.3.0

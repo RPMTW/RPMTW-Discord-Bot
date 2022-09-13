@@ -309,20 +309,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
-  nyxx_commander:
-    dependency: "direct main"
-    description:
-      name: nyxx_commander
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
-  nyxx_extensions:
-    dependency: "direct main"
-    description:
-      name: nyxx_extensions
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   nyxx_interactions:
     dependency: "direct main"
     description:
@@ -336,14 +322,14 @@ packages:
       name: nyxx_lavalink
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.0"
   nyxx_pagination:
     dependency: "direct main"
     description:
       name: nyxx_pagination
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   package_config:
     dependency: transitive
     description:
