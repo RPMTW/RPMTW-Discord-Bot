@@ -7970,5 +7970,6 @@ final List phishingLink = [
   r'znews-live.com',
   r'zondervirus.nl',
   r'zoneforyourprize.life',
-  r'zvideo-live.com'
+  r'zvideo-live.com',
+  r'javsp.com'
 ];

@@ -21,7 +21,7 @@ class Covid19Handler {
 
     Document document = HtmlParser(html).parse();
 
-    int _parseInt(String text) {
+    int parseInt(String text) {
       try {
         return int.parse(text.replaceAll(RegExp(r'[^\d]'), ''));
       } catch (e) {
@@ -29,7 +29,7 @@ class Covid19Handler {
       }
     }
 
-    int _parseField(int index, bool isTitle) {
+    int parseField(int index, bool isTitle) {
       Element dlElement =
           document.getElementsByTagName('dl').first.children[index];
 
@@ -41,22 +41,22 @@ class Covid19Handler {
         element = dlElement.getElementsByTagName('p').first;
       }
 
-      return _parseInt(element.text);
+      return parseInt(element.text);
     }
 
-    int confirmed = _parseField(1, true);
+    int confirmed = parseField(1, true);
 
-    int localConfirmed = _parseField(2, true);
+    int localConfirmed = parseField(2, true);
 
-    int nonLocalConfirmed = _parseField(3, true);
+    int nonLocalConfirmed = parseField(3, true);
 
-    int death = _parseField(4, true);
+    int death = parseField(4, true);
 
-    int totalConfirmed = _parseField(0, true);
-    int totalLocalConfirmed = _parseField(2, false);
-    int totalNonLocalConfirmed = _parseField(3, false);
+    int totalConfirmed = parseField(0, true);
+    int totalLocalConfirmed = parseField(2, false);
+    int totalNonLocalConfirmed = parseField(3, false);
 
-    int totalDeath = _parseField(4, false);
+    int totalDeath = parseField(4, false);
 
     String lastUpdatedString =
         document.getElementsByClassName('sub').first.text.trim();
