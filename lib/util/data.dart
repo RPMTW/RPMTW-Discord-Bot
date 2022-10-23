@@ -24,23 +24,28 @@ late final BotLogger _logger;
 BotLogger get logger => _logger;
 late bool kDebugMode;
 
-class Data {
+class DataUtil {
   static late final Box _chefBox;
   static late final Box _covid19Box;
+  static late final Box<String> _universeChatBox;
   static late final DotEnv _dotEnv;
 
   static Box get chefBox => _chefBox;
   static Box get covid19Box => _covid19Box;
+  static Box<String> get universeChatBox => _universeChatBox;
   static DotEnv get dotEnv => _dotEnv;
 
   static Future<void> init() async {
     _dotEnv = DotEnv(includePlatformEnvironment: true)..load();
-    RPMTWApiClient.init();
+    RPMTWApiClient.init(token: dotEnv['RPMTW_API_TOKEN']!);
+
     String path = absolute(Directory.current.path, 'data');
     Hive.init(path);
     Hive.registerAdapter(Covid19InfoAdapter());
     _chefBox = await Hive.openBox('chefBox');
     _covid19Box = await Hive.openBox('covid19Box');
+    _universeChatBox = await Hive.openBox('universe_chat_box');
+
     await initializeDateFormatting('zh-TW');
 
     kDebugMode = dotEnv['DEBUG_MODE']?.toBool() ?? false;

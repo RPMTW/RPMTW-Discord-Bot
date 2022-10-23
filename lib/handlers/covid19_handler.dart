@@ -76,7 +76,7 @@ class Covid19Handler {
 
   static Future<_Covid19FetchStatus> _fetchAndSave() async {
     Covid19Info info = await fetch();
-    Box box = Data.covid19Box;
+    Box box = DataUtil.covid19Box;
 
     bool duplicate = _getLatest()?.lastUpdatedString == info.lastUpdatedString;
 
@@ -105,7 +105,7 @@ class Covid19Handler {
   }
 
   static Covid19Info? _getLatest() {
-    Box box = Data.covid19Box;
+    Box box = DataUtil.covid19Box;
     if (box.isEmpty) {
       return null;
     } else {
@@ -117,7 +117,7 @@ class Covid19Handler {
   }
 
   static Covid19Info? getYesterday() {
-    Box box = Data.covid19Box;
+    Box box = DataUtil.covid19Box;
     try {
       List<int> keys = box.keys.map((e) => int.parse(e)).toList();
 

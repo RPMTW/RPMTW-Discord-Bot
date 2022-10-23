@@ -46,12 +46,14 @@ class Interactions {
           await event.acknowledge();
           final String? filter = event.interaction.getArg('filter');
 
-          RPMTWApiClient apiClient = RPMTWApiClient.instance;
+          final apiClient = RPMTWApiClient.instance;
           List<MinecraftMod> mods =
-              await apiClient.minecraftResource.search(filter: filter);
-          mods = mods.take(5).toList();
+              (await apiClient.minecraftResource.search(filter: filter))
+                  .data
+                  .take(5)
+                  .toList();
 
-          EmbedBuilder embed = EmbedBuilder();
+          final embed = EmbedBuilder();
           embed.title = '模組搜尋結果';
           embed.description =
               '共搜尋到 ${mods.length} 個模組，由於 Discord 技術限制最多只會顯示 5 個模組';
@@ -195,7 +197,7 @@ class Interactions {
           await event.acknowledge();
 
           final INyxxWebsocket client = event.client as INyxxWebsocket;
-          final Box box = Data.chefBox;
+          final Box box = DataUtil.chefBox;
           final String userID = event.getArg('user').value;
           final IUser user = await client.fetchUser(userID.toSnowflake());
 
@@ -233,7 +235,7 @@ class Interactions {
         guild: rpmtwDiscordServerID)
       ..registerHandler((event) async {
         try {
-          final Box box = Data.chefBox;
+          final Box box = DataUtil.chefBox;
           EmbedBuilder embed = EmbedBuilder();
           embed.title = '電神排名';
           embed.description = '看看誰最電！ (前 10 名)';

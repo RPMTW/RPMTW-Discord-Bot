@@ -11,7 +11,7 @@ class ReadyEvent implements BaseEvent<IReadyEvent> {
     //   print('Raw event: ${_event.rawData}');
     // });
 
-    await Data.initOnReady(client);
+    await DataUtil.initOnReady(client);
     logger.info('${client.self.tag} Ready!');
   }
 }

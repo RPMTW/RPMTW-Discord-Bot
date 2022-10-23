@@ -7,7 +7,7 @@ import 'package:rpmtw_discord_bot/events/voice_state_update_event.dart';
 import 'package:rpmtw_discord_bot/util/data.dart';
 
 class Events {
-  static register(INyxxWebsocket client) {
+  static void register(INyxxWebsocket client) {
     try {
       client.eventsWs.onReady
           .listen((event) => ReadyEvent().handler(client, event));
