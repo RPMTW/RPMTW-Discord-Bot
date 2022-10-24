@@ -6,7 +6,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:path/path.dart';
 import 'package:rpmtw_api_client/rpmtw_api_client.dart';
-import 'package:rpmtw_discord_bot/handlers/music_handler.dart';
 import 'package:rpmtw_discord_bot/model/covid19_info.dart';
 import 'package:rpmtw_discord_bot/util/log.dart';
 import 'package:rpmtw_dart_common_library/rpmtw_dart_common_library.dart';
@@ -57,6 +56,5 @@ class DataUtil {
     ITextChannel channel =
         await dcClient.fetchChannel<ITextChannel>(logChannelID);
     _logger = BotLogger(channel);
-    await MusicHandler.init();
   }
 }
