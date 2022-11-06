@@ -82,6 +82,12 @@ class UniverseChatHandler {
     final api = RPMTWApiClient.instance.universeChatResource;
     final dataBox = DataUtil.universeChatBox;
 
+    String content = message.content;
+
+    if (message.attachments.isNotEmpty) {
+      content += '\n${message.attachments.map((e) => e.url).join('\n')}';
+    }
+
     final referencedMessage = message.referencedMessage;
     String? replyMessageUUID;
 
@@ -95,7 +101,7 @@ class UniverseChatHandler {
     }
 
     String uuid = await api.sendDiscordMessage(
-        message: _formatEmojiToMinecraft(message.content),
+        message: _formatEmojiToMinecraft(content),
         username: message.author.tag,
         userId: message.author.id.toString(),
         nickname: guild.members[message.author.id]?.nickname,
@@ -123,14 +129,12 @@ class UniverseChatHandler {
         : message.username;
   }
 
-  static String _formatEmojiToDiscord(
-      String message) {
+  static String _formatEmojiToDiscord(String message) {
     return message.replaceAllMapped(RegExp(r':([a-zA-Z0-9_]+):'),
         (match) => '<:${match[1]}:${emojiData[match[1]]}>');
   }
 
-  static String _formatEmojiToMinecraft(
-      String message) {
+  static String _formatEmojiToMinecraft(String message) {
     return message.replaceAllMapped(
         RegExp(r'<:([a-zA-Z0-9_]+):([0-9]+)>'),
         (match) =>
