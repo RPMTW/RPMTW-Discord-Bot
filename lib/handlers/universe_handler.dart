@@ -97,6 +97,7 @@ class UniverseChatHandler {
     String uuid = await api.sendDiscordMessage(
         message: _formatEmojiToMinecraft(message.content),
         username: message.author.tag,
+        userId: message.author.id.toString(),
         nickname: guild.members[message.author.id]?.nickname,
         avatarUrl: message.author.avatarURL(format: 'png'),
         replyMessageUUID: replyMessageUUID);
